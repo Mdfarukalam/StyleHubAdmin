@@ -9,15 +9,17 @@ import Kids from "./Page/Kids";
 import Dashboard from "./Page/Dashboard";
 import Top_Product from "./Page/Top_Product";
 import New_Arrivals from "./Page/New_Arrivals";
+import Login from "./component/Login";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+<Route path="/" element={<Login />} />
 
         {/* Admin Layout */}
         <Route path="/" element={<Home />}>
-          <Route path="dashboard" element={<Dashboard />} />
+           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<User />} />
 
           <Route path="men" element={<Men />} />
