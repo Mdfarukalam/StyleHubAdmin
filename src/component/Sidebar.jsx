@@ -19,6 +19,21 @@ const Sidebar = () => {
         <p className="text-xs font-semibold text-gray-500 uppercase mb-4 px-3">
           Management
         </p>
+        <Link
+  to="/dashboard"
+  className="
+    w-full flex items-center gap-3
+    px-4 py-3
+    rounded-lg
+    text-gray-400
+    hover:bg-[#1e2229]
+    hover:text-white
+    transition
+  "
+>
+  <span className="text-lg">📊</span>
+  <span className="font-medium">Dashboard</span>
+</Link>
 
         {/* Users */}
         <Link
@@ -87,6 +102,45 @@ const Sidebar = () => {
           <span className="text-lg">🧒</span>
           <span className="font-medium">Kids</span>
         </Link>
+
+
+
+               {/* Kids */}
+{/* Top Product */}
+<Link
+  to="/top-product"
+  className="
+    w-full flex items-center gap-3
+    px-4 py-3
+    rounded-lg
+    text-gray-400
+    hover:bg-[#1e2229]
+    hover:text-white
+    transition
+  "
+>
+  <span className="text-lg">🔥</span>
+  <span className="font-medium">Top Product</span>
+</Link>
+
+
+{/* New Arrivals */}
+<Link
+  to="/new-arrivals"
+  className="
+    w-full flex items-center gap-3
+    px-4 py-3
+    rounded-lg
+    text-gray-400
+    hover:bg-[#1e2229]
+    hover:text-white
+    transition
+  "
+>
+  <span className="text-lg">🆕</span>
+  <span className="font-medium">New Arrivals</span>
+</Link>
+
 
       </div>
 
