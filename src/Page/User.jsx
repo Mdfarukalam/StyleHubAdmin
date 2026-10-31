@@ -32,10 +32,10 @@ const User = () => {
       const userData = Array.isArray(data)
         ? data
         : data.users ||
-          data.User ||
-          data.data?.users ||
-          data.data ||
-          [];
+        data.User ||
+        data.data?.users ||
+        data.data ||
+        [];
 
       setUsers(Array.isArray(userData) ? userData : []);
     }
@@ -71,12 +71,12 @@ const User = () => {
       prevUsers.map((user) =>
         user._id === selectedUser._id
           ? {
-              ...user,
-              status:
-                getUserStatus(user) === "Active"
-                  ? "Blocked"
-                  : "Active",
-            }
+            ...user,
+            status:
+              getUserStatus(user) === "Active"
+                ? "Blocked"
+                : "Active",
+          }
           : user
       )
     );
@@ -194,7 +194,7 @@ const User = () => {
         </div>
 
         {/* Active Users */}
-        <div className="bg-[#181b21] border border-[#2a2e36] rounded-xl p-5">
+        {/* <div className="bg-[#181b21] border border-[#2a2e36] rounded-xl p-5">
 
           <p className="text-sm text-gray-400">
             Active Users
@@ -206,10 +206,10 @@ const User = () => {
             ).length}
           </h2>
 
-        </div>
+        </div> */}
 
         {/* Blocked Users */}
-        <div className="bg-[#181b21] border border-[#2a2e36] rounded-xl p-5">
+        {/* <div className="bg-[#181b21] border border-[#2a2e36] rounded-xl p-5">
 
           <p className="text-sm text-gray-400">
             Blocked Users
@@ -221,7 +221,7 @@ const User = () => {
             ).length}
           </h2>
 
-        </div>
+        </div> */}
 
       </div>
 
@@ -240,16 +240,18 @@ const User = () => {
                 </th>
 
                 <th className="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-                  Contact
+                  Email
+                </th>
+
+                <th className="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+                  Contact No
                 </th>
 
                 <th className="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                   Joined
                 </th>
 
-                <th className="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-                  Status
-                </th>
+
 
                 <th className="px-6 py-4 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                   Actions
@@ -287,7 +289,7 @@ const User = () => {
                             </p>
 
                             <p className="text-xs text-gray-500 mt-0.5">
-                              User #{String(user._id || "").slice(-6)}
+                              User #{String(user._id || "")}
                             </p>
                           </div>
 
@@ -302,28 +304,37 @@ const User = () => {
                           {user.Email || "No email"}
                         </p>
 
+
+
+                      </td>
+                      <td className="px-6 py-4">
+
+
+
                         <p className="text-xs text-gray-500 mt-1">
-                          {user.Phone || user.phone || "No phone"}
+                          {user.phoneNumber || user.phoneNumber || "No phone"}
                         </p>
 
                       </td>
-
                       {/* Joined */}
                       <td className="px-6 py-4 text-sm text-gray-400">
                         {user.createdAt
                           ? new Date(user.createdAt).toLocaleDateString(
-                              "en-IN",
-                              {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              }
-                            )
+                            "en-IN",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )
                           : "N/A"}
                       </td>
 
+
+
+
                       {/* Status */}
-                      <td className="px-6 py-4">
+                      {/* <td className="px-6 py-4">
 
                         <span
                           className={`inline-flex items-center gap-2 text-xs font-medium ${
@@ -345,7 +356,7 @@ const User = () => {
 
                         </span>
 
-                      </td>
+                      </td> */}
 
                       {/* Actions */}
                       <td className="px-6 py-4">
@@ -353,7 +364,7 @@ const User = () => {
                         <div className="flex justify-end items-center gap-1">
 
                           {/* Block / Unblock */}
-                          <button
+                          {/* <button
                             title={
                               status === "Active"
                                 ? "Block"
@@ -370,7 +381,7 @@ const User = () => {
                                 strokeWidth={1.8}
                               />
                             )}
-                          </button>
+                          </button> */}
 
                           {/* Delete */}
                           <button
@@ -421,7 +432,7 @@ const User = () => {
       </div>
 
       {/* BLOCK / UNBLOCK MODAL */}
-      {showBlockModal && selectedUser && (
+      {/* {showBlockModal && selectedUser && (
 
         <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4">
 
@@ -499,7 +510,7 @@ const User = () => {
 
         </div>
 
-      )}
+      )} */}
 
       {/* DELETE MODAL */}
       {showDeleteModal && selectedUser && (
