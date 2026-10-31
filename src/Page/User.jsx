@@ -202,7 +202,6 @@ const User = () => {
 
               {filteredUsers.length > 0 ? (
                 filteredUsers.map((user) => {
-                  const status = getUserStatus(user);
 
                   return (
                     <tr
