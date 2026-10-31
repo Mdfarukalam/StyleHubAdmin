@@ -1,128 +1,79 @@
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
-  Pencil,
   Trash2,
   Ban,
   CheckCircle,
   Users,
-  MoreHorizontal,
-  X,
 } from "lucide-react";
+
+import { toast } from "react-toastify";
+import API from "../ApiEndPoint/ApiUrl";
+import useGet from "../service/hooks/useGet";
 
 const User = () => {
   const [search, setSearch] = useState("");
+  const [users, setUsers] = useState([]);
 
-  // Modal states
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  // Selected user
   const [selectedUser, setSelectedUser] = useState(null);
 
-  // Users
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Rahul Kumar",
-      email: "rahul@gmail.com",
-      phone: "+91 98765 43210",
-      status: "Active",
-      joined: "12 Sep 2026",
-    },
-    {
-      id: 2,
-      name: "Aman Singh",
-      email: "aman@gmail.com",
-      phone: "+91 98765 43211",
-      status: "Active",
-      joined: "15 Sep 2026",
-    },
-    {
-      id: 3,
-      name: "Priya Sharma",
-      email: "priya@gmail.com",
-      phone: "+91 98765 43212",
-      status: "Blocked",
-      joined: "18 Sep 2026",
-    },
-    {
-      id: 4,
-      name: "Neha Verma",
-      email: "neha@gmail.com",
-      phone: "+91 98765 43213",
-      status: "Active",
-      joined: "20 Sep 2026",
-    },
-  ]);
+  // GET ALL USERS API
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useGet(["users"], API.users);
 
-  // Edit form
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
+  // API response ko users array mein convert karna
+  useEffect(() => {
+    if (data) {
+      const userData = Array.isArray(data)
+        ? data
+        : data.users ||
+          data.User ||
+          data.data?.users ||
+          data.data ||
+          [];
+
+      setUsers(Array.isArray(userData) ? userData : []);
+    }
+  }, [data]);
+
+  // Search users
+  const filteredUsers = users.filter((user) => {
+    const name = user.fullName || "";
+    const email = user.Email || "";
+
+    return (
+      name.toLowerCase().includes(search.toLowerCase()) ||
+      email.toLowerCase().includes(search.toLowerCase())
+    );
   });
 
-  // Search
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // Open Edit Modal
-  const openEditModal = (user) => {
-    setSelectedUser(user);
-
-    setForm({
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-    });
-
-    setShowEditModal(true);
+  // User status
+  const getUserStatus = (user) => {
+    return user.status || "Active";
   };
 
-  // Save Edit
-  const handleEdit = () => {
-    if (!form.name || !form.email || !form.phone) {
-      return;
-    }
-
-    setUsers(
-      users.map((user) =>
-        user.id === selectedUser.id
-          ? {
-              ...user,
-              name: form.name,
-              email: form.email,
-              phone: form.phone,
-            }
-          : user
-      )
-    );
-
-    setShowEditModal(false);
-    setSelectedUser(null);
-  };
-
-  // Open Block Modal
+  // Open block modal
   const openBlockModal = (user) => {
     setSelectedUser(user);
     setShowBlockModal(true);
   };
 
-  // Block / Unblock
+  // Block / Unblock user
   const handleBlock = () => {
-    setUsers(
-      users.map((user) =>
-        user.id === selectedUser.id
+    if (!selectedUser) return;
+
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user._id === selectedUser._id
           ? {
               ...user,
               status:
-                user.status === "Active"
+                getUserStatus(user) === "Active"
                   ? "Blocked"
                   : "Active",
             }
@@ -130,27 +81,55 @@ const User = () => {
       )
     );
 
+    toast.success(
+      getUserStatus(selectedUser) === "Active"
+        ? "User blocked successfully"
+        : "User unblocked successfully"
+    );
+
     setShowBlockModal(false);
     setSelectedUser(null);
   };
 
-  // Open Delete Modal
+  // Open delete modal
   const openDeleteModal = (user) => {
     setSelectedUser(user);
     setShowDeleteModal(true);
   };
 
-  // Delete User
+  // Delete user
   const handleDelete = () => {
-    setUsers(
-      users.filter(
-        (user) => user.id !== selectedUser.id
+    if (!selectedUser) return;
+
+    setUsers((prevUsers) =>
+      prevUsers.filter(
+        (user) => user._id !== selectedUser._id
       )
     );
+
+    toast.success("User deleted successfully");
 
     setShowDeleteModal(false);
     setSelectedUser(null);
   };
+
+  // Loading
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#0f1115] flex items-center justify-center text-gray-300">
+        Loading users...
+      </div>
+    );
+  }
+
+  // Error
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-[#0f1115] flex items-center justify-center text-red-400">
+        Failed to load users. Please try again.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0f1115] p-6 lg:p-8 text-gray-200">
@@ -181,21 +160,7 @@ const User = () => {
             placeholder="Search users..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="
-              w-full
-              h-[42px]
-              pl-10
-              pr-4
-              bg-[#181b21]
-              border border-[#2a2e36]
-              rounded-lg
-              text-sm
-              text-gray-200
-              outline-none
-              placeholder:text-gray-500
-              focus:border-gray-500
-              transition
-            "
+            className="w-full h-[42px] pl-10 pr-4 bg-[#181b21] border border-[#2a2e36] rounded-lg text-sm text-gray-200 outline-none placeholder:text-gray-500 focus:border-gray-500 transition"
           />
 
         </div>
@@ -205,7 +170,7 @@ const User = () => {
       {/* Statistics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
 
-        {/* Total */}
+        {/* Total Users */}
         <div className="bg-[#181b21] border border-[#2a2e36] rounded-xl p-5">
 
           <div className="flex items-center justify-between">
@@ -228,7 +193,7 @@ const User = () => {
 
         </div>
 
-        {/* Active */}
+        {/* Active Users */}
         <div className="bg-[#181b21] border border-[#2a2e36] rounded-xl p-5">
 
           <p className="text-sm text-gray-400">
@@ -236,12 +201,14 @@ const User = () => {
           </p>
 
           <h2 className="text-2xl font-semibold text-white mt-1">
-            {users.filter((user) => user.status === "Active").length}
+            {users.filter(
+              (user) => getUserStatus(user) === "Active"
+            ).length}
           </h2>
 
         </div>
 
-        {/* Blocked */}
+        {/* Blocked Users */}
         <div className="bg-[#181b21] border border-[#2a2e36] rounded-xl p-5">
 
           <p className="text-sm text-gray-400">
@@ -249,14 +216,16 @@ const User = () => {
           </p>
 
           <h2 className="text-2xl font-semibold text-white mt-1">
-            {users.filter((user) => user.status === "Blocked").length}
+            {users.filter(
+              (user) => getUserStatus(user) === "Blocked"
+            ).length}
           </h2>
 
         </div>
 
       </div>
 
-      {/* Table */}
+      {/* Users Table */}
       <div className="bg-[#181b21] border border-[#2a2e36] rounded-xl overflow-hidden">
 
         <div className="overflow-x-auto">
@@ -264,7 +233,6 @@ const User = () => {
           <table className="w-full min-w-[900px]">
 
             <thead>
-
               <tr className="bg-[#14171c] border-b border-[#2a2e36]">
 
                 <th className="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">
@@ -288,147 +256,148 @@ const User = () => {
                 </th>
 
               </tr>
-
             </thead>
 
             <tbody className="divide-y divide-[#252931]">
 
-              {filteredUsers.map((user) => (
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map((user) => {
+                  const status = getUserStatus(user);
 
-                <tr
-                  key={user.id}
-                  className="hover:bg-[#1e2229] transition"
-                >
-
-                  {/* Customer */}
-                  <td className="px-6 py-4">
-
-                    <div className="flex items-center gap-3">
-
-                      <div className="w-10 h-10 rounded-full bg-[#252932] flex items-center justify-center text-sm font-semibold text-gray-300">
-                        {user.name.charAt(0)}
-                      </div>
-
-                      <div>
-
-                        <p className="text-sm font-medium text-gray-200">
-                          {user.name}
-                        </p>
-
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          User #{String(user.id).padStart(4, "0")}
-                        </p>
-
-                      </div>
-
-                    </div>
-
-                  </td>
-
-                  {/* Contact */}
-                  <td className="px-6 py-4">
-
-                    <p className="text-sm text-gray-300">
-                      {user.email}
-                    </p>
-
-                    <p className="text-xs text-gray-500 mt-1">
-                      {user.phone}
-                    </p>
-
-                  </td>
-
-                  {/* Joined */}
-                  <td className="px-6 py-4 text-sm text-gray-400">
-                    {user.joined}
-                  </td>
-
-                  {/* Status */}
-                  <td className="px-6 py-4">
-
-                    <span
-                      className={`inline-flex items-center gap-2 text-xs font-medium ${
-                        user.status === "Active"
-                          ? "text-emerald-400"
-                          : "text-red-400"
-                      }`}
+                  return (
+                    <tr
+                      key={user._id}
+                      className="hover:bg-[#1e2229] transition"
                     >
 
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          user.status === "Active"
-                            ? "bg-emerald-500"
-                            : "bg-red-500"
-                        }`}
-                      />
+                      {/* Customer */}
+                      <td className="px-6 py-4">
 
-                      {user.status}
+                        <div className="flex items-center gap-3">
 
-                    </span>
+                          <div className="w-10 h-10 rounded-full bg-[#252932] flex items-center justify-center text-sm font-semibold text-gray-300">
+                            {(user.fullName || "U")
+                              .charAt(0)
+                              .toUpperCase()}
+                          </div>
 
-                  </td>
+                          <div>
+                            <p className="text-sm font-medium text-gray-200">
+                              {user.fullName || "Unknown User"}
+                            </p>
 
-                  {/* Actions */}
-                  <td className="px-6 py-4">
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              User #{String(user._id || "").slice(-6)}
+                            </p>
+                          </div>
 
-                    <div className="flex justify-end items-center gap-1">
+                        </div>
 
-               
+                      </td>
 
-                      {/* Block */}
-                      <button
-                        title={
-                          user.status === "Active"
-                            ? "Block"
-                            : "Unblock"
-                        }
-                        onClick={() => openBlockModal(user)}
-                        className="
-                          w-9 h-9
-                          flex items-center justify-center
-                          rounded-lg
-                          text-gray-500
-                          hover:text-orange-400
-                          hover:bg-orange-500/10
-                          transition
-                        "
-                      >
-                        {user.status === "Active" ? (
-                          <Ban size={17} strokeWidth={1.8} />
-                        ) : (
-                          <CheckCircle
-                            size={17}
-                            strokeWidth={1.8}
+                      {/* Contact */}
+                      <td className="px-6 py-4">
+
+                        <p className="text-sm text-gray-300">
+                          {user.Email || "No email"}
+                        </p>
+
+                        <p className="text-xs text-gray-500 mt-1">
+                          {user.Phone || user.phone || "No phone"}
+                        </p>
+
+                      </td>
+
+                      {/* Joined */}
+                      <td className="px-6 py-4 text-sm text-gray-400">
+                        {user.createdAt
+                          ? new Date(user.createdAt).toLocaleDateString(
+                              "en-IN",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )
+                          : "N/A"}
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-6 py-4">
+
+                        <span
+                          className={`inline-flex items-center gap-2 text-xs font-medium ${
+                            status === "Active"
+                              ? "text-emerald-400"
+                              : "text-red-400"
+                          }`}
+                        >
+
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              status === "Active"
+                                ? "bg-emerald-500"
+                                : "bg-red-500"
+                            }`}
                           />
-                        )}
-                      </button>
 
-                      {/* Delete */}
-                      <button
-                        title="Delete"
-                        onClick={() => openDeleteModal(user)}
-                        className="
-                          w-9 h-9
-                          flex items-center justify-center
-                          rounded-lg
-                          text-gray-500
-                          hover:text-red-400
-                          hover:bg-red-500/10
-                          transition
-                        "
-                      >
-                        <Trash2 size={17} strokeWidth={1.8} />
-                      </button>
+                          {status}
 
-                  
+                        </span>
 
-                    </div>
+                      </td>
 
+                      {/* Actions */}
+                      <td className="px-6 py-4">
+
+                        <div className="flex justify-end items-center gap-1">
+
+                          {/* Block / Unblock */}
+                          <button
+                            title={
+                              status === "Active"
+                                ? "Block"
+                                : "Unblock"
+                            }
+                            onClick={() => openBlockModal(user)}
+                            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:text-orange-400 hover:bg-orange-500/10 transition"
+                          >
+                            {status === "Active" ? (
+                              <Ban size={17} strokeWidth={1.8} />
+                            ) : (
+                              <CheckCircle
+                                size={17}
+                                strokeWidth={1.8}
+                              />
+                            )}
+                          </button>
+
+                          {/* Delete */}
+                          <button
+                            title="Delete"
+                            onClick={() => openDeleteModal(user)}
+                            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition"
+                          >
+                            <Trash2 size={17} strokeWidth={1.8} />
+                          </button>
+
+                        </div>
+
+                      </td>
+
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="text-center py-12 text-gray-500 text-sm"
+                  >
+                    No users found
                   </td>
-
                 </tr>
-
-              ))}
+              )}
 
             </tbody>
 
@@ -451,32 +420,25 @@ const User = () => {
 
       </div>
 
-   
-
-      {/* ================= BLOCK / UNBLOCK MODAL ================= */}
-
-      {showBlockModal && (
+      {/* BLOCK / UNBLOCK MODAL */}
+      {showBlockModal && selectedUser && (
 
         <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4">
 
           <div className="w-full max-w-[420px] bg-[#181b21] border border-[#2a2e36] rounded-xl p-6">
 
             <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mb-4">
-              {selectedUser?.status === "Active" ? (
-                <Ban
-                  size={22}
-                  className="text-orange-400"
-                />
+
+              {getUserStatus(selectedUser) === "Active" ? (
+                <Ban size={22} className="text-orange-400" />
               ) : (
-                <CheckCircle
-                  size={22}
-                  className="text-emerald-400"
-                />
+                <CheckCircle size={22} className="text-emerald-400" />
               )}
+
             </div>
 
             <h2 className="text-lg font-semibold text-white">
-              {selectedUser?.status === "Active"
+              {getUserStatus(selectedUser) === "Active"
                 ? "Block User"
                 : "Unblock User"}
             </h2>
@@ -486,17 +448,17 @@ const User = () => {
               Are you sure you want to{" "}
 
               <span className="text-white font-medium">
-                {selectedUser?.status === "Active"
+                {getUserStatus(selectedUser) === "Active"
                   ? "block"
                   : "unblock"}
               </span>{" "}
 
               <span className="text-white font-medium">
-                {selectedUser?.name}
+                {selectedUser.fullName}
               </span>
               ?
 
-              {selectedUser?.status === "Active" && (
+              {getUserStatus(selectedUser) === "Active" && (
                 <>
                   <br />
                   This user will no longer be able to access
@@ -509,35 +471,24 @@ const User = () => {
             <div className="flex justify-end gap-3 mt-6">
 
               <button
-                onClick={() => setShowBlockModal(false)}
-                className="
-                  px-4 py-2
-                  rounded-lg
-                  bg-[#292e37]
-                  text-sm
-                  text-gray-300
-                  hover:bg-[#333842]
-                "
+                onClick={() => {
+                  setShowBlockModal(false);
+                  setSelectedUser(null);
+                }}
+                className="px-4 py-2 rounded-lg bg-[#292e37] text-sm text-gray-300 hover:bg-[#333842]"
               >
                 Cancel
               </button>
 
               <button
                 onClick={handleBlock}
-                className={`
-                  px-5 py-2
-                  rounded-lg
-                  text-sm
-                  font-medium
-                  text-white
-                  ${
-                    selectedUser?.status === "Active"
-                      ? "bg-orange-500 hover:bg-orange-600"
-                      : "bg-emerald-500 hover:bg-emerald-600"
-                  }
-                `}
+                className={`px-5 py-2 rounded-lg text-sm font-medium text-white ${
+                  getUserStatus(selectedUser) === "Active"
+                    ? "bg-orange-500 hover:bg-orange-600"
+                    : "bg-emerald-500 hover:bg-emerald-600"
+                }`}
               >
-                {selectedUser?.status === "Active"
+                {getUserStatus(selectedUser) === "Active"
                   ? "Block User"
                   : "Unblock User"}
               </button>
@@ -550,21 +501,15 @@ const User = () => {
 
       )}
 
-      {/* ================= DELETE MODAL ================= */}
-
-      {showDeleteModal && (
+      {/* DELETE MODAL */}
+      {showDeleteModal && selectedUser && (
 
         <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4">
 
           <div className="w-full max-w-[400px] bg-[#181b21] border border-[#2a2e36] rounded-xl p-6">
 
             <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
-
-              <Trash2
-                size={22}
-                className="text-red-400"
-              />
-
+              <Trash2 size={22} className="text-red-400" />
             </div>
 
             <h2 className="text-lg font-semibold text-white">
@@ -576,7 +521,7 @@ const User = () => {
               Are you sure you want to delete{" "}
 
               <span className="text-white font-medium">
-                {selectedUser?.name}
+                {selectedUser.fullName}
               </span>
               ?
 
@@ -589,30 +534,18 @@ const User = () => {
             <div className="flex justify-end gap-3 mt-6">
 
               <button
-                onClick={() => setShowDeleteModal(false)}
-                className="
-                  px-4 py-2
-                  rounded-lg
-                  bg-[#292e37]
-                  text-sm
-                  text-gray-300
-                  hover:bg-[#333842]
-                "
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setSelectedUser(null);
+                }}
+                className="px-4 py-2 rounded-lg bg-[#292e37] text-sm text-gray-300 hover:bg-[#333842]"
               >
                 Cancel
               </button>
 
               <button
                 onClick={handleDelete}
-                className="
-                  px-5 py-2
-                  rounded-lg
-                  bg-red-500
-                  hover:bg-red-600
-                  text-sm
-                  font-medium
-                  text-white
-                "
+                className="px-5 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-sm font-medium text-white"
               >
                 Delete User
               </button>

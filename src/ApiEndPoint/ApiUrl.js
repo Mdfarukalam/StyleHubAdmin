@@ -26,9 +26,7 @@ export const API = {
   },
 
   // USERS
-  users: {
-    get: "/api/admin/GetAllUsers",
-  },
+  users:"/api/admin/GetAllUsers",
 
   // TOP PRODUCTS
   topProducts: {
