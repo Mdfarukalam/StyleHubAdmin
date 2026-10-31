@@ -52,44 +52,10 @@ const User = () => {
     );
   });
 
-  // User status
-  const getUserStatus = (user) => {
-    return user.status || "Active";
-  };
+ 
 
-  // Open block modal
-  const openBlockModal = (user) => {
-    setSelectedUser(user);
-    setShowBlockModal(true);
-  };
-
-  // Block / Unblock user
-  const handleBlock = () => {
-    if (!selectedUser) return;
-
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user._id === selectedUser._id
-          ? {
-            ...user,
-            status:
-              getUserStatus(user) === "Active"
-                ? "Blocked"
-                : "Active",
-          }
-          : user
-      )
-    );
-
-    toast.success(
-      getUserStatus(selectedUser) === "Active"
-        ? "User blocked successfully"
-        : "User unblocked successfully"
-    );
-
-    setShowBlockModal(false);
-    setSelectedUser(null);
-  };
+ 
+ 
 
   // Open delete modal
   const openDeleteModal = (user) => {
@@ -193,35 +159,7 @@ const User = () => {
 
         </div>
 
-        {/* Active Users */}
-        {/* <div className="bg-[#181b21] border border-[#2a2e36] rounded-xl p-5">
-
-          <p className="text-sm text-gray-400">
-            Active Users
-          </p>
-
-          <h2 className="text-2xl font-semibold text-white mt-1">
-            {users.filter(
-              (user) => getUserStatus(user) === "Active"
-            ).length}
-          </h2>
-
-        </div> */}
-
-        {/* Blocked Users */}
-        {/* <div className="bg-[#181b21] border border-[#2a2e36] rounded-xl p-5">
-
-          <p className="text-sm text-gray-400">
-            Blocked Users
-          </p>
-
-          <h2 className="text-2xl font-semibold text-white mt-1">
-            {users.filter(
-              (user) => getUserStatus(user) === "Blocked"
-            ).length}
-          </h2>
-
-        </div> */}
+ 
 
       </div>
 
@@ -333,57 +271,14 @@ const User = () => {
 
 
 
-                      {/* Status */}
-                      {/* <td className="px-6 py-4">
-
-                        <span
-                          className={`inline-flex items-center gap-2 text-xs font-medium ${
-                            status === "Active"
-                              ? "text-emerald-400"
-                              : "text-red-400"
-                          }`}
-                        >
-
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              status === "Active"
-                                ? "bg-emerald-500"
-                                : "bg-red-500"
-                            }`}
-                          />
-
-                          {status}
-
-                        </span>
-
-                      </td> */}
+                
 
                       {/* Actions */}
                       <td className="px-6 py-4">
 
                         <div className="flex justify-end items-center gap-1">
 
-                          {/* Block / Unblock */}
-                          {/* <button
-                            title={
-                              status === "Active"
-                                ? "Block"
-                                : "Unblock"
-                            }
-                            onClick={() => openBlockModal(user)}
-                            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:text-orange-400 hover:bg-orange-500/10 transition"
-                          >
-                            {status === "Active" ? (
-                              <Ban size={17} strokeWidth={1.8} />
-                            ) : (
-                              <CheckCircle
-                                size={17}
-                                strokeWidth={1.8}
-                              />
-                            )}
-                          </button> */}
-
-                          {/* Delete */}
+                           {/* Delete */}
                           <button
                             title="Delete"
                             onClick={() => openDeleteModal(user)}
@@ -431,86 +326,7 @@ const User = () => {
 
       </div>
 
-      {/* BLOCK / UNBLOCK MODAL */}
-      {/* {showBlockModal && selectedUser && (
-
-        <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4">
-
-          <div className="w-full max-w-[420px] bg-[#181b21] border border-[#2a2e36] rounded-xl p-6">
-
-            <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mb-4">
-
-              {getUserStatus(selectedUser) === "Active" ? (
-                <Ban size={22} className="text-orange-400" />
-              ) : (
-                <CheckCircle size={22} className="text-emerald-400" />
-              )}
-
-            </div>
-
-            <h2 className="text-lg font-semibold text-white">
-              {getUserStatus(selectedUser) === "Active"
-                ? "Block User"
-                : "Unblock User"}
-            </h2>
-
-            <p className="text-sm text-gray-400 mt-2 leading-6">
-
-              Are you sure you want to{" "}
-
-              <span className="text-white font-medium">
-                {getUserStatus(selectedUser) === "Active"
-                  ? "block"
-                  : "unblock"}
-              </span>{" "}
-
-              <span className="text-white font-medium">
-                {selectedUser.fullName}
-              </span>
-              ?
-
-              {getUserStatus(selectedUser) === "Active" && (
-                <>
-                  <br />
-                  This user will no longer be able to access
-                  their account.
-                </>
-              )}
-
-            </p>
-
-            <div className="flex justify-end gap-3 mt-6">
-
-              <button
-                onClick={() => {
-                  setShowBlockModal(false);
-                  setSelectedUser(null);
-                }}
-                className="px-4 py-2 rounded-lg bg-[#292e37] text-sm text-gray-300 hover:bg-[#333842]"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleBlock}
-                className={`px-5 py-2 rounded-lg text-sm font-medium text-white ${
-                  getUserStatus(selectedUser) === "Active"
-                    ? "bg-orange-500 hover:bg-orange-600"
-                    : "bg-emerald-500 hover:bg-emerald-600"
-                }`}
-              >
-                {getUserStatus(selectedUser) === "Active"
-                  ? "Block User"
-                  : "Unblock User"}
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      )} */}
+     
 
       {/* DELETE MODAL */}
       {showDeleteModal && selectedUser && (
