@@ -1,17 +1,57 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import storageService from "../service/storageService";
+import API from "../ApiEndPoint/ApiUrl"
+import useMutationApi from "../service/hooks/useMutationApi";
 
 const Login = () => {
+  const LoginMutation = useMutationApi("POST", API.Admin_Login);
+
   const [showPassword, setShowPassword] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    Email: "",
+    Password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
-  const LoginS = (e) => {
-    e.preventDefault();
+  // Input Change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-
-    navigate("/dashboard");
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
+
+  // Login API
+ const LoginS = (e) => {
+  e.preventDefault();
+
+  setError("");
+
+  LoginMutation.mutate(formData, {
+    onSuccess: (data) => {
+      storageService.setToken(data.token);
+
+      toast.success("Login Successfully!");
+      navigate("/dashboard");
+    },
+
+    onError: (error) => {
+      setError(error.message);
+      toast.error(error.message || "Login Failed!");
+    },
+  });
+};
+
+
 
   return (
     <div className="min-h-screen bg-[#0f1117] flex items-center justify-center px-4">
@@ -52,6 +92,9 @@ const Login = () => {
               <input
                 type="email"
                 placeholder="admin@stylehub.com"
+                name="Email"
+                value={formData.Email}
+                onChange={handleChange}
                 className="w-full bg-[#222631] border border-[#343946] rounded-lg px-4 py-3 text-white outline-none focus:border-pink-500"
                 required
               />
@@ -66,7 +109,10 @@ const Login = () => {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
+                  name="Password"
+                  placeholder="Password"
+                  value={formData.Password}
+                  onChange={handleChange}
                   className="w-full bg-[#222631] border border-[#343946] rounded-lg px-4 py-3 pr-12 text-white outline-none focus:border-pink-500"
                   required
                 />
@@ -81,29 +127,12 @@ const Login = () => {
               </div>
             </div>
 
-            {/* REMEMBER */}
-            <div className="flex items-center justify-between mb-6 text-sm">
 
-              <label className="flex items-center gap-2 text-gray-400">
-                <input
-                  type="checkbox"
-                  className="accent-pink-500"
-                />
-                Remember me
-              </label>
-
-              <button
-                type="button"
-                className="text-pink-500"
-              >
-                Forgot Password?
-              </button>
-
-            </div>
 
             {/* LOGIN */}
             <button
               type="submit"
+              onClick={LoginS}
               className="w-full bg-pink-600 hover:bg-pink-700 transition text-white font-semibold py-3 rounded-lg"
             >
               Login as Admin
@@ -111,11 +140,7 @@ const Login = () => {
 
           </form>
 
-          <div className="mt-6 pt-5 border-t border-[#272b36] text-center">
-            <p className="text-xs text-gray-500">
-              🔒 Secure Admin Access
-            </p>
-          </div>
+
 
         </div>
 
