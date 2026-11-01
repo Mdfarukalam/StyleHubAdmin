@@ -16,13 +16,12 @@ export const API = {
     get: "/api/admin/ListWomenProducts",
   },
 
-  // KIDS
-  kids: {
-    add: "/api/admin/AddkidProducts",
-    edit: "/api/admin/EditeKidProducts",
-    delete: "/api/admin/DeleteKidProducts",
-    get: "/api/admin/GetKids",
-  },
+ 
+    kidsadd: "/api/admin/AddkidProducts",
+    kidsedit: "/api/admin/EditeKidProducts",
+    kidsdelete: "/api/admin/DeleteKidProducts",
+    kidsget: "/api/admin/GetKids",
+ 
 
   // USERS
   users:"/api/admin/GetAllUsers",

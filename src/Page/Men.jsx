@@ -15,6 +15,7 @@ import API from "../ApiEndPoint/ApiUrl";
 import useGet from "../service/hooks/useGet";
 import CommonTable from "../component/CommonTable";
 import MenTablecolumns from "./MenTableControler";
+import AddProductButton from "../component/AddProductButton";
 const Men = () => {
   const [search, setSearch] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -198,18 +199,9 @@ const Men = () => {
         />
 
           {/* Add Product */}
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="h-[42px] px-4
-            bg-pink-500
-            hover:bg-pink-600
-            rounded-lg
-            flex items-center justify-center gap-2
-            text-sm font-medium"
-          >
-            <Plus size={18} />
-            Add Product
-          </button>
+   <AddProductButton
+  onClick={() => setShowAddModal(true)}
+/>
 
         </div>
       </div>

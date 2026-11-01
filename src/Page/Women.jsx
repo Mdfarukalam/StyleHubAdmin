@@ -15,6 +15,7 @@ import WomenTablecolumns from "./WomenTableControler";
 import API from "../ApiEndPoint/ApiUrl";
 import useGet from "../service/hooks/useGet";
 import DeleteModal from "../component/DeleteModal";
+import AddProductButton from "../component/AddProductButton";
 const Women = () => {
   const [search, setSearch] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -29,7 +30,7 @@ const Women = () => {
     data,
     isLoading,
     isError,
-  } = useGet(["men"], API.women.get);
+  } = useGet(["women"], API.women.get);
 
  
   useEffect(() => {
@@ -194,20 +195,9 @@ const Women = () => {
         />
 
           {/* Add Product */}
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="
-              h-[42px] px-4
-              bg-pink-500
-              hover:bg-pink-600
-              rounded-lg
-              flex items-center justify-center gap-2
-              text-sm font-medium
-            "
-          >
-            <Plus size={18} />
-            Add Product
-          </button>
+         <AddProductButton
+  onClick={() => setShowAddModal(true)}
+/>
 
         </div>
       </div>

@@ -7,6 +7,19 @@ import {
   X,
 } from "lucide-react";
 
+
+import CommonTable from "../component/CommonTable";
+ 
+import New_ArrivalsTablecolumns from "./New_ArrivalsControler";
+import { useEffect,  } from "react";
+
+
+import API from "../ApiEndPoint/ApiUrl";
+import useGet from "../service/hooks/useGet";
+import DeleteModal from "../component/DeleteModal";
+import CommonSearch from "../component/CommonSearch";
+import AddProductButton from "../component/AddProductButton";
+
 const New_Arrivals = () => {
   const [search, setSearch] = useState("");
 
@@ -15,6 +28,23 @@ const New_Arrivals = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+
+     const {
+    data,
+    isLoading,
+    isError,
+  } = useGet(["arrivals"], API.arrivals.get);
+
+ 
+ 
+useEffect(() => {
+  if (data) {
+    setSelectedProduct(
+      Array.isArray(data.GetArrivalsProduts) ? data.GetArrivalsProduts : []
+    );
+  }
+}, [data]);
 
   const [products, setProducts] = useState([
     {
@@ -155,7 +185,14 @@ const New_Arrivals = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f1117] text-white p-6 lg:p-8">
+    
+
+
+
+
+
+
+        <div className="min-h-screen bg-[#0f1117] text-white p-6 lg:p-8">
 
       {/* ================= HEADER ================= */}
 
@@ -173,45 +210,16 @@ const New_Arrivals = () => {
 
         <div className="flex flex-col sm:flex-row gap-3">
 
-          {/* SEARCH */}
+           <CommonSearch
+          search={search}
+          setSearch={setSearch}
+          placeholder="Search users..."
+        />
 
-          <div className="relative w-full sm:w-[280px]">
-
-            <Search
-              size={18}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"
-            />
-
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-[42px] pl-10 pr-4
-              bg-[#151821]
-              border border-[#292e3a]
-              rounded-lg
-              text-sm text-gray-200
-              outline-none
-              focus:border-pink-500"
-            />
-
-          </div>
-
-          {/* ADD PRODUCT */}
-
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="h-[42px] px-4
-            bg-pink-500
-            hover:bg-pink-600
-            rounded-lg
-            flex items-center justify-center gap-2
-            text-sm font-medium"
-          >
-            <Plus size={18} />
-            Add Product
-          </button>
+             {/* Add Product */}
+         <AddProductButton
+  onClick={() => setShowAddModal(true)}
+/>
 
         </div>
 
@@ -220,518 +228,65 @@ const New_Arrivals = () => {
 
       {/* ================= PRODUCT TABLE ================= */}
 
-      <div className="bg-[#151821] border border-[#292e3a] rounded-xl overflow-hidden">
-
-        <div className="overflow-x-auto">
-
-          <table className="w-full min-w-[900px]">
-
-            {/* TABLE HEADER */}
-
-            <thead>
-
-              <tr className="bg-[#1b1f2a] border-b border-[#292e3a]">
-
-                <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">
-                  Product
-                </th>
-
-                <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">
-                  Category
-                </th>
-
-                <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">
-                  Price
-                </th>
-
-                <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">
-                  Added Date
-                </th>
-
-                <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">
-                  Status
-                </th>
-
-                <th className="px-6 py-4 text-right text-[11px] uppercase tracking-wider text-gray-400">
-                  Actions
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            {/* TABLE BODY */}
-
-            <tbody className="divide-y divide-[#292e3a]">
-
-              {filteredProducts.length > 0 ? (
-
-                filteredProducts.map((product) => (
-
-                  <tr
-                    key={product.id}
-                    className="hover:bg-[#1b1f2a] transition"
-                  >
-
-                    {/* PRODUCT */}
-
-                    <td className="px-6 py-4">
-
-                      <div>
-
-                        <p className="text-sm font-medium text-gray-200">
-                          {product.name}
-                        </p>
-
-                        <p className="text-xs text-gray-500 mt-1">
-                          Product #
-                          {String(product.id).padStart(4, "0")}
-                        </p>
-
-                      </div>
-
-                    </td>
-
-
-                    {/* CATEGORY */}
-
-                    <td className="px-6 py-4 text-sm text-gray-400">
-                      {product.category}
-                    </td>
-
-
-                    {/* PRICE */}
-
-                    <td className="px-6 py-4 text-sm font-medium text-gray-200">
-                      {product.price}
-                    </td>
-
-
-                    {/* DATE */}
-
-                    <td className="px-6 py-4 text-sm text-gray-400">
-                      {product.date}
-                    </td>
-
-
-                    {/* STATUS */}
-
-                    <td className="px-6 py-4">
-
-                      <span className="inline-flex items-center gap-2 text-xs font-medium text-emerald-400">
-
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-
-                        {product.status}
-
-                      </span>
-
-                    </td>
-
-
-                    {/* ACTIONS */}
-
-                    <td className="px-6 py-4">
-
-                      <div className="flex justify-end gap-1">
-
-                        {/* EDIT */}
-
-                        <button
-                          title="Edit"
-                          onClick={() => openEdit(product)}
-                          className="w-9 h-9 flex items-center justify-center
-                          rounded-lg
-                          text-gray-400
-                          hover:text-white
-                          hover:bg-[#252a36]
-                          transition"
-                        >
-                          <Pencil size={17} />
-                        </button>
-
-
-                        {/* DELETE */}
-
-                        <button
-                          title="Delete"
-                          onClick={() => {
-                            setSelectedProduct(product);
-                            setShowDeleteModal(true);
-                          }}
-                          className="w-9 h-9 flex items-center justify-center
-                          rounded-lg
-                          text-gray-400
-                          hover:text-red-400
-                          hover:bg-red-500/10
-                          transition"
-                        >
-                          <Trash2 size={17} />
-                        </button>
-
-                      </div>
-
-                    </td>
-
-                  </tr>
-
-                ))
-
-              ) : (
-
-                <tr>
-
-                  <td
-                    colSpan="6"
-                    className="text-center py-12 text-gray-500"
-                  >
-                    No products found
-                  </td>
-
-                </tr>
-
-              )}
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-
-        {/* ================= FOOTER ================= */}
-
-        <div className="h-[58px] px-6 border-t border-[#292e3a] flex items-center justify-between">
-
-          <p className="text-xs text-gray-500">
-            Showing {filteredProducts.length} of {products.length} products
-          </p>
-
-          <p className="text-xs text-gray-600">
-            Latest Products
-          </p>
-
-        </div>
-
-      </div>
-
-
-      {/* ================================================= */}
-      {/* ADD PRODUCT MODAL */}
-      {/* ================================================= */}
-
-      {showAddModal && (
-
-        <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4">
-
-          <div className="w-full max-w-[500px] bg-[#151821] border border-[#292e3a] rounded-xl">
-
-            <div className="flex items-center justify-between px-6 py-5 border-b border-[#292e3a]">
-
-              <h2 className="text-lg font-semibold">
-                Add New Product
-              </h2>
-
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-white"
-              >
-                <X size={20} />
-              </button>
-
-            </div>
-
-
-            <div className="p-6 space-y-4">
-
-              <input
-                type="text"
-                placeholder="Product name"
-                value={form.name}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    name: e.target.value,
-                  })
-                }
-                className="w-full h-11 px-4
-                bg-[#0f1117]
-                border border-[#292e3a]
-                rounded-lg
-                outline-none
-                text-sm"
-              />
-
-
-              <input
-                type="text"
-                placeholder="Category"
-                value={form.category}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    category: e.target.value,
-                  })
-                }
-                className="w-full h-11 px-4
-                bg-[#0f1117]
-                border border-[#292e3a]
-                rounded-lg
-                outline-none
-                text-sm"
-              />
-
-
-              <input
-                type="number"
-                placeholder="Price"
-                value={form.price}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    price: e.target.value,
-                  })
-                }
-                className="w-full h-11 px-4
-                bg-[#0f1117]
-                border border-[#292e3a]
-                rounded-lg
-                outline-none
-                text-sm"
-              />
-
-
-              <input
-                type="text"
-                placeholder="Added date"
-                value={form.date}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    date: e.target.value,
-                  })
-                }
-                className="w-full h-11 px-4
-                bg-[#0f1117]
-                border border-[#292e3a]
-                rounded-lg
-                outline-none
-                text-sm"
-              />
-
-            </div>
-
-
-            <div className="flex justify-end gap-3 px-6 py-5 border-t border-[#292e3a]">
-
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 rounded-lg bg-[#252a36] text-sm"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleAdd}
-                className="px-5 py-2 rounded-lg bg-pink-500 hover:bg-pink-600 text-sm font-medium"
-              >
-                Add Product
-              </button>
-
-            </div>
+        <CommonTable
+        columns={New_ArrivalsTablecolumns}
+
+        data={selectedProduct}
+        actions={(item) => (
+
+          <div className="flex justify-end items-center gap-1 px-6 py-4">
+
+          <div className="flex justify-end gap-1">
+
+                      {/* Edit */}
+                      <button
+                        title="Edit"
+                        onClick={() => openEdit(item)}
+                        className="w-9 h-9 flex items-center justify-center
+                        rounded-lg
+                        text-gray-400
+                        hover:text-white
+                        hover:bg-[#252a36]
+                        transition"
+                      >
+                        <Pencil size={17} />
+                      </button>
+
+
+                      {/* Delete */}
+                      <button
+                        title="Delete"
+                        onClick={() => {
+                          setSelectedProduct(item);
+                          setShowDeleteModal(true);
+                        }}
+                        className="w-9 h-9 flex items-center justify-center
+                        rounded-lg
+                        text-gray-400
+                        hover:text-red-400
+                        hover:bg-red-500/10
+                        transition"
+                      >
+                        <Trash2 size={17} />
+                      </button>
+
+                    </div>
 
           </div>
-
-        </div>
-
-      )}
-
-
-      {/* ================================================= */}
-      {/* EDIT PRODUCT MODAL */}
-      {/* ================================================= */}
-
-      {showEditModal && (
-
-        <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4">
-
-          <div className="w-full max-w-[500px] bg-[#151821] border border-[#292e3a] rounded-xl">
-
-            <div className="flex items-center justify-between px-6 py-5 border-b border-[#292e3a]">
-
-              <h2 className="text-lg font-semibold">
-                Edit New Product
-              </h2>
-
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="text-gray-400 hover:text-white"
-              >
-                <X size={20} />
-              </button>
-
-            </div>
+        )}
+     
+      />
 
 
-            <div className="p-6 space-y-4">
+    
 
-              <input
-                type="text"
-                placeholder="Product name"
-                value={form.name}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    name: e.target.value,
-                  })
-                }
-                className="w-full h-11 px-4
-                bg-[#0f1117]
-                border border-[#292e3a]
-                rounded-lg
-                outline-none
-                text-sm"
-              />
-
-
-              <input
-                type="text"
-                placeholder="Category"
-                value={form.category}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    category: e.target.value,
-                  })
-                }
-                className="w-full h-11 px-4
-                bg-[#0f1117]
-                border border-[#292e3a]
-                rounded-lg
-                outline-none
-                text-sm"
-              />
-
-
-              <input
-                type="number"
-                placeholder="Price"
-                value={form.price}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    price: e.target.value,
-                  })
-                }
-                className="w-full h-11 px-4
-                bg-[#0f1117]
-                border border-[#292e3a]
-                rounded-lg
-                outline-none
-                text-sm"
-              />
-
-
-              <input
-                type="text"
-                placeholder="Added date"
-                value={form.date}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    date: e.target.value,
-                  })
-                }
-                className="w-full h-11 px-4
-                bg-[#0f1117]
-                border border-[#292e3a]
-                rounded-lg
-                outline-none
-                text-sm"
-              />
-
-            </div>
-
-
-            <div className="flex justify-end gap-3 px-6 py-5 border-t border-[#292e3a]">
-
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="px-4 py-2 rounded-lg bg-[#252a36] text-sm"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleEdit}
-                className="px-5 py-2 rounded-lg bg-pink-500 hover:bg-pink-600 text-sm font-medium"
-              >
-                Save Changes
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      )}
-
-
-      {/* ================================================= */}
-      {/* DELETE MODAL */}
-      {/* ================================================= */}
-
-      {showDeleteModal && (
-
-        <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4">
-
-          <div className="w-full max-w-[400px] bg-[#151821] border border-[#292e3a] rounded-xl p-6">
-
-            <h2 className="text-lg font-semibold">
-              Delete Product
-            </h2>
-
-            <p className="text-sm text-gray-400 mt-2 leading-6">
-
-              Are you sure you want to delete{" "}
-
-              <span className="text-white font-medium">
-                {selectedProduct?.name}
-              </span>
-              ?
-
-              <br />
-
-              This action cannot be undone.
-
-            </p>
-
-
-            <div className="flex justify-end gap-3 mt-6">
-
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-lg bg-[#252a36] text-sm"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleDelete}
-                className="px-5 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-sm font-medium"
-              >
-                Delete
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      )}
+      <DeleteModal
+        isOpen={showDeleteModal}
+        setIsOpen={setShowDeleteModal}
+        selectedUser={selectedProduct}
+        setSelectedUser={setSelectedProduct}
+        handleDelete={handleDelete}
+      />
 
     </div>
   );
