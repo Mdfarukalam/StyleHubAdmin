@@ -13,7 +13,7 @@ import CommonTable from "../component/CommonTable";
 import New_ArrivalsTablecolumns from "./New_ArrivalsControler";
 import { useEffect,  } from "react";
 import toastService from "../component/toastService";
-
+import AddModal from "../component/AddModal";
 
 import API from "../ApiEndPoint/ApiUrl";
 import useGet from "../service/hooks/useGet";
@@ -221,9 +221,7 @@ const handleDelete = () => {
         />
 
              {/* Add Product */}
-         <AddProductButton
-  onClick={() => setShowAddModal(true)}
-/>
+<AddModal category="arrivals" />
 
         </div>
 

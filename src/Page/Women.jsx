@@ -16,6 +16,7 @@ import API from "../ApiEndPoint/ApiUrl";
 import useGet from "../service/hooks/useGet";
 import DeleteModal from "../component/DeleteModal";
 import AddProductButton from "../component/AddProductButton";
+import AddModal from "../component/AddModal";
 const Women = () => {
   const [search, setSearch] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -198,9 +199,7 @@ const handleDelete = () => {
         />
 
           {/* Add Product */}
-         <AddProductButton
-  onClick={() => setShowAddModal(true)}
-/>
+<AddModal category="women" />
 
         </div>
       </div>

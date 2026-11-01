@@ -10,7 +10,7 @@ import Top_productTablecolumns from "./Top_ProductTableContrler";
 import CommonTable from "../component/CommonTable";
 
 import { useEffect,  } from "react";
-
+import AddModal from "../component/AddModal";
 import useMutationApi from "../service/hooks/useMutationApi";
 import API from "../ApiEndPoint/ApiUrl";
 import useGet from "../service/hooks/useGet";
@@ -218,9 +218,7 @@ const handleDelete = () => {
         />
 
              {/* Add Product */}
-         <AddProductButton
-  onClick={() => setShowAddModal(true)}
-/>
+<AddModal category="topProducts" />
 
         </div>
 

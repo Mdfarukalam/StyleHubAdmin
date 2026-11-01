@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import CommonTable from "../component/CommonTable";
 import KidTablecolumns from "./KidTableControler";
-
+import AddModal from "../component/AddModal";
 import { useEffect,  } from "react";
 import toastService from "../component/toastService";
 import useMutationApi from "../service/hooks/useMutationApi";
@@ -191,9 +191,7 @@ const handleDelete = () => {
         />
 
              {/* Add Product */}
-         <AddProductButton
-  onClick={() => setShowAddModal(true)}
-/>
+<AddModal category="kids" />
 
         </div>
       </div>

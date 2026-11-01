@@ -10,13 +10,14 @@ import CommonSearch from "../component/CommonSearch";
 import DeleteModal from "../component/DeleteModal";
 import { useEffect,  } from "react";
 import toastService from "../component/toastService";
-
+import MenModel from "./MenModel";
 import useMutationApi from "../service/hooks/useMutationApi";
 import API from "../ApiEndPoint/ApiUrl";
 import useGet from "../service/hooks/useGet";
 import CommonTable from "../component/CommonTable";
 import MenTablecolumns from "./MenTableControler";
 import AddProductButton from "../component/AddProductButton";
+import AddModal from "../component/AddModal";
 const Men = () => {
   const [search, setSearch] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -207,10 +208,8 @@ const handleDelete = () => {
         />
 
           {/* Add Product */}
-   <AddProductButton
-  onClick={() => setShowAddModal(true)}
-/>
-
+ 
+                <AddModal  category="men"  />
         </div>
       </div>
 
@@ -233,6 +232,7 @@ const handleDelete = () => {
                       <button
                         title="Edit"
                         onClick={() => openEdit(item)}
+                 
                         className="w-9 h-9 flex items-center justify-center
                         rounded-lg
                         text-gray-400
@@ -251,6 +251,7 @@ const handleDelete = () => {
                           setSelectedMenProduct(item);
                           setShowDeleteModal(true);
                         }}
+                        
                         className="w-9 h-9 flex items-center justify-center
                         rounded-lg
                         text-gray-400
@@ -272,192 +273,7 @@ const handleDelete = () => {
 
    
 
-      {/* ================= ADD MODAL ================= */}
-
-      {showAddModal && (
-
-        <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4">
-
-          <div className="w-full max-w-[500px] bg-[#151821] border border-[#292e3a] rounded-xl">
-
-            <div className="flex items-center justify-between px-6 py-5 border-b border-[#292e3a]">
-
-              <h2 className="text-lg font-semibold">
-                Add Product
-              </h2>
-
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-white"
-              >
-                <X size={20} />
-              </button>
-
-            </div>
-
-
-            <div className="p-6 space-y-4">
-
-              <input
-                type="text"
-                placeholder="Product name"
-                value={form.name}
-                onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
-                }
-                className="w-full h-11 px-4 bg-[#0f1117] border border-[#292e3a] rounded-lg outline-none text-sm"
-              />
-
-              <input
-                type="text"
-                placeholder="Category"
-                value={form.category}
-                onChange={(e) =>
-                  setForm({ ...form, category: e.target.value })
-                }
-                className="w-full h-11 px-4 bg-[#0f1117] border border-[#292e3a] rounded-lg outline-none text-sm"
-              />
-
-              <input
-                type="number"
-                placeholder="Price"
-                value={form.price}
-                onChange={(e) =>
-                  setForm({ ...form, price: e.target.value })
-                }
-                className="w-full h-11 px-4 bg-[#0f1117] border border-[#292e3a] rounded-lg outline-none text-sm"
-              />
-
-              <input
-                type="number"
-                placeholder="Stock"
-                value={form.stock}
-                onChange={(e) =>
-                  setForm({ ...form, stock: e.target.value })
-                }
-                className="w-full h-11 px-4 bg-[#0f1117] border border-[#292e3a] rounded-lg outline-none text-sm"
-              />
-
-            </div>
-
-
-            <div className="flex justify-end gap-3 px-6 py-5 border-t border-[#292e3a]">
-
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 rounded-lg bg-[#252a36] text-sm"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleAdd}
-                className="px-5 py-2 rounded-lg bg-pink-500 hover:bg-pink-600 text-sm font-medium"
-              >
-                Add Product
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      )}
-
-
-      {/* ================= EDIT MODAL ================= */}
-
-      {showEditModal && (
-
-        <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4">
-
-          <div className="w-full max-w-[500px] bg-[#151821] border border-[#292e3a] rounded-xl">
-
-            <div className="flex items-center justify-between px-6 py-5 border-b border-[#292e3a]">
-
-              <h2 className="text-lg font-semibold">
-                Edit Product
-              </h2>
-
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="text-gray-400 hover:text-white"
-              >
-                <X size={20} />
-              </button>
-
-            </div>
-
-
-            <div className="p-6 space-y-4">
-
-              <input
-                type="text"
-                placeholder="Product name"
-                value={form.name}
-                onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
-                }
-                className="w-full h-11 px-4 bg-[#0f1117] border border-[#292e3a] rounded-lg outline-none text-sm"
-              />
-
-              <input
-                type="text"
-                placeholder="Category"
-                value={form.category}
-                onChange={(e) =>
-                  setForm({ ...form, category: e.target.value })
-                }
-                className="w-full h-11 px-4 bg-[#0f1117] border border-[#292e3a] rounded-lg outline-none text-sm"
-              />
-
-              <input
-                type="number"
-                placeholder="Price"
-                value={form.price}
-                onChange={(e) =>
-                  setForm({ ...form, price: e.target.value })
-                }
-                className="w-full h-11 px-4 bg-[#0f1117] border border-[#292e3a] rounded-lg outline-none text-sm"
-              />
-
-              <input
-                type="number"
-                placeholder="Stock"
-                value={form.stock}
-                onChange={(e) =>
-                  setForm({ ...form, stock: e.target.value })
-                }
-                className="w-full h-11 px-4 bg-[#0f1117] border border-[#292e3a] rounded-lg outline-none text-sm"
-              />
-
-            </div>
-
-
-            <div className="flex justify-end gap-3 px-6 py-5 border-t border-[#292e3a]">
-
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="px-4 py-2 rounded-lg bg-[#252a36] text-sm"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleEdit}
-                className="px-5 py-2 rounded-lg bg-pink-500 hover:bg-pink-600 text-sm font-medium"
-              >
-                Save Changes
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      )}
+   
 
 
    
