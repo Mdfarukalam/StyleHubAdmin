@@ -79,7 +79,7 @@ const handleDelete = () => {
   deleteProduct({ id: selectedUser._id });
    toastService.success("User deleted successfully");
       setShowDeleteModal(false);
-    setSelectedMenProduct(null);
+    setSelectedUser(null);
               
 
 };
