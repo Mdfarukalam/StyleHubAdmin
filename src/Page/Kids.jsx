@@ -21,8 +21,24 @@ import AddProductButton from "../component/AddProductButton";
 
 const Kids = () => {
   const [search, setSearch] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+ 
+
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState("add");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  
+  const handleAdd = () => {
+    setSelectedProduct(null);
+    setModalMode("add");
+    setIsModalOpen(true);
+  };
+  
+  const handleEdit = (product) => {
+    setSelectedProduct(product);
+    setModalMode("edit");
+    setIsModalOpen(true);
+  };
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [selectedKidProduct, setSelectedKidProduct] = useState(null);
@@ -33,7 +49,7 @@ const Kids = () => {
     data,
     isLoading,
     isError,
-  } = useGet(["kid"], API.kidsget);
+  } = useGet(["kids"], API.kidsget);
 
  
  
@@ -45,111 +61,10 @@ useEffect(() => {
   }
 }, [data]);
 
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Cotton T-Shirt",
-      category: "T-Shirts",
-      price: "₹599",
-      stock: 35,
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Kids Jeans",
-      category: "Jeans",
-      price: "₹899",
-      stock: 24,
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Printed Dress",
-      category: "Dresses",
-      price: "₹799",
-      stock: 18,
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Kids Denim Jacket",
-      category: "Jackets",
-      price: "₹1,299",
-      stock: 0,
-      status: "Out of Stock",
-    },
-  ]);
+ 
+ 
 
-  const [form, setForm] = useState({
-    name: "",
-    category: "",
-    price: "",
-    stock: "",
-  });
-
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const handleAdd = () => {
-    if (!form.name || !form.category || !form.price || !form.stock) {
-      return;
-    }
-
-    const newProduct = {
-      id: Date.now(),
-      name: form.name,
-      category: form.category,
-      price: `₹${form.price}`,
-      stock: Number(form.stock),
-      status: Number(form.stock) > 0 ? "Active" : "Out of Stock",
-    };
-
-    setProducts([...products, newProduct]);
-
-    setForm({
-      name: "",
-      category: "",
-      price: "",
-      stock: "",
-    });
-
-    setShowAddModal(false);
-  };
-
-  const openEdit = (product) => {
-    setSelectedKidProduct(product);
-
-    setForm({
-      name: product.name,
-      category: product.category,
-      price: product.price.replace("₹", ""),
-      stock: product.stock,
-    });
-
-    setShowEditModal(true);
-  };
-
-  const handleEdit = () => {
-    setProducts(
-      products.map((product) =>
-        product.id === selectedKidProduct.id
-          ? {
-              ...product,
-              name: form.name,
-              category: form.category,
-              price: `₹${form.price}`,
-              stock: Number(form.stock),
-              status:
-                Number(form.stock) > 0 ? "Active" : "Out of Stock",
-            }
-          : product
-      )
-    );
-
-    setShowEditModal(false);
-    setSelectedKidProduct(null);
-  };
+ 
 
   const { mutate: deleteProduct } = useMutationApi(
   "DELETE",
@@ -189,9 +104,19 @@ const handleDelete = () => {
           setSearch={setSearch}
           placeholder="Search users..."
         />
+          <AddProductButton  onClick={handleAdd} title="Add Kids Product"></AddProductButton>
 
-             {/* Add Product */}
-<AddModal category="kids" />
+ <AddModal
+  category="kids"
+  mode={modalMode}
+  product={selectedProduct}
+  isOpen={isModalOpen}
+  onClose={() => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  }}
+/>
+ 
 
         </div>
       </div>
@@ -209,7 +134,7 @@ const handleDelete = () => {
                       {/* Edit */}
                       <button
                         title="Edit"
-                        onClick={() => openEdit(item)}
+                                 onClick={() => handleEdit(item)}
                         className="w-9 h-9 flex items-center justify-center
                         rounded-lg
                         text-gray-400

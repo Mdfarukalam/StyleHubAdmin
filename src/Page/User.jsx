@@ -43,20 +43,11 @@ const User = () => {
         data.data ||
         [];
 
-      setUsers(Array.isArray(userData) ? userData : []);
+      setSelectedUser(Array.isArray(userData) ? userData : []);
     }
   }, [data]);
 
-  // Search users
-  const filteredUsers = users.filter((user) => {
-    const name = user.fullName || "";
-    const email = user.Email || "";
-
-    return (
-      name.toLowerCase().includes(search.toLowerCase()) ||
-      email.toLowerCase().includes(search.toLowerCase())
-    );
-  });
+ 
 
 
 
@@ -120,7 +111,7 @@ const handleDelete = () => {
       <CommonTable
         columns={columns}
 
-        data={filteredUsers}
+        data={selectedUser}
         actions={(item) => (
 
           <div className="flex justify-end items-center gap-1 px-6 py-4">

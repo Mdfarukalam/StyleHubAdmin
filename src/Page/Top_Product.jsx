@@ -22,8 +22,21 @@ import toastService from "../component/toastService";
 const Top_Product = () => {
   const [search, setSearch] = useState("");
 
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+const [isModalOpen, setIsModalOpen] = useState(false);
+const [modalMode, setModalMode] = useState("add");
+const [selectedProduct, setSelectedProduct] = useState(null);
+
+const handleAdd = () => {
+  setSelectedProduct(null);
+  setModalMode("add");
+  setIsModalOpen(true);
+};
+
+const handleEdit = (product) => {
+  setSelectedProduct(product);
+  setModalMode("edit");
+  setIsModalOpen(true);
+};
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [selectedTopProduct, setSelectedTopProduct] = useState(null);
@@ -51,132 +64,7 @@ const Top_Product = () => {
 }, [data]);
 
 
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Premium Silk Saree",
-      category: "Women",
-      price: "₹1,299",
-      sales: 125,
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Slim Fit Jeans",
-      category: "Men",
-      price: "₹1,499",
-      sales: 98,
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Kids Printed T-Shirt",
-      category: "Kids",
-      price: "₹599",
-      sales: 76,
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Women Casual Kurti",
-      category: "Women",
-      price: "₹899",
-      sales: 64,
-      status: "Active",
-    },
-  ]);
-
-  const [form, setForm] = useState({
-    name: "",
-    category: "",
-    price: "",
-    sales: "",
-  });
-
-  // Search
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // ================= ADD PRODUCT =================
-
-  const handleAdd = () => {
-    if (
-      !form.name ||
-      !form.category ||
-      !form.price ||
-      !form.sales
-    ) {
-      return;
-    }
-
-    const newProduct = {
-      id: Date.now(),
-      name: form.name,
-      category: form.category,
-      price: `₹${form.price}`,
-      sales: Number(form.sales),
-      status: "Active",
-    };
-
-    setProducts([...products, newProduct]);
-
-    setForm({
-      name: "",
-      category: "",
-      price: "",
-      sales: "",
-    });
-
-    setShowAddModal(false);
-  };
-
-  // ================= OPEN EDIT =================
-
-  const openEdit = (product) => {
-    setSelectedTopProduct(product);
-
-    setForm({
-      name: product.name,
-      category: product.category,
-      price: product.price.replace("₹", ""),
-      sales: product.sales,
-    });
-
-    setShowEditModal(true);
-  };
-
-  // ================= EDIT PRODUCT =================
-
-  const handleEdit = () => {
-    if (
-      !form.name ||
-      !form.category ||
-      !form.price ||
-      !form.sales
-    ) {
-      return;
-    }
-
-    setProducts(
-      products.map((product) =>
-        product.id === selectedTopProduct.id
-          ? {
-              ...product,
-              name: form.name,
-              category: form.category,
-              price: `₹${form.price}`,
-              sales: Number(form.sales),
-            }
-          : product
-      )
-    );
-
-    setShowEditModal(false);
-    setSelectedTopProduct(null);
-  };
-
-  // ================= DELETE PRODUCT =================
+ 
 
   const { mutate: deleteProduct } = useMutationApi(
   "DELETE",
@@ -217,8 +105,21 @@ const handleDelete = () => {
           placeholder="Search users..."
         />
 
+
+         <AddProductButton  onClick={handleAdd} title="Add Top Product"></AddProductButton>
+
+ <AddModal
+  category="topProducts"
+  mode={modalMode}
+  product={selectedProduct}
+  isOpen={isModalOpen}
+  onClose={() => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  }}
+/>
              {/* Add Product */}
-<AddModal category="topProducts" />
+ 
 
         </div>
 
@@ -240,7 +141,8 @@ const handleDelete = () => {
                       {/* Edit */}
                       <button
                         title="Edit"
-                        onClick={() => openEdit(item)}
+                                      onClick={() => handleEdit(item)}
+
                         className="w-9 h-9 flex items-center justify-center
                         rounded-lg
                         text-gray-400

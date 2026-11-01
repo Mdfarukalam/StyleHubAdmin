@@ -9,24 +9,24 @@ Modal.setAppElement("#root");
 
 function AddModal({   category = "men",
   mode = "add",
-  product = null, }) {
+  product = null,  isOpen,
+  onClose, }) {
   const config = productFields[category];
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const initialData = Object.fromEntries(
-    config.fields.map((field) => [
-      field.name,
-      field.name === "category"
-        ? field.options[0]
-        : field.type === "checkbox"
-        ? false
-        : field.name === "stock" || field.name === "rating"
-        ? 0
-        : "",
-    ])
-  );
+ if (!config) return null;
+ 
+const initialData = Object.fromEntries(
+  config.fields.map((field) => [
+    field.name,
+    field.name === "category"
+      ? field.options?.[0] || ""
+      : field.type === "checkbox"
+      ? false
+      : field.name === "stock" || field.name === "rating"
+      ? 0
+      : "",
+  ])
+);
 
   const [formData, setFormData] = useState(initialData);
 
@@ -99,47 +99,55 @@ const handleSubmit = (e) => {
   });
 
   if (mode === "edit") {
-    updateProduct(
-      { ...productData, id: product._id },
-      {
-        onSuccess: () => {
-          toastService.success(`${config.title} updated successfully`);
-          setIsOpen(false);
-        },
-        onError: (error) => toastService.error(error.message),
-      }
-    );
- 
-  } else {
+  updateProduct(
+    { ...productData, id: product._id },
+    {
+      onSuccess: () => {
+        toastService.success(`${config.title} updated successfully`);
+        onClose();
+      },
+      onError: (error) => toastService.error(error.message),
+    }
+  );
+} else {
     addProduct(productData, {
       onSuccess: () => {
         toastService.success(`${config.title} added successfully`);
-        setIsOpen(false);
+   onClose();
       },
       onError: (error) => toastService.error(error.message),
     });
   }
 };
 
+ 
 
-
-  useEffect(() => {
+useEffect(() => {
   if (mode === "edit" && product) {
-    setFormData({
-      ...initialData,
-      ...product,
-      colors: Array.isArray(product.colors)
-        ? product.colors.join(", ")
-        : product.colors || "",
-      sizes: Array.isArray(product.sizes)
-        ? product.sizes.join(", ")
-        : product.sizes || "",
+    const editData = { ...initialData };
+
+    config.fields.forEach((field) => {
+      const value = product[field.name];
+
+      if (field.type === "array") {
+        editData[field.name] = Array.isArray(value)
+          ? value.join(", ")
+          : value || "";
+      } else if (field.type === "checkbox") {
+        editData[field.name] = Boolean(value);
+      } else {
+        editData[field.name] = value ?? editData[field.name];
+      }
     });
+
+    setFormData(editData);
   } else {
     setFormData(initialData);
   }
 }, [mode, product, category]);
 
+
+console.log(product,"productproduct")
   const inputClass =
     "w-full border border-[#343a46] bg-[#1e222b] text-white p-3 rounded-lg outline-none focus:border-pink-500";
 
@@ -147,32 +155,27 @@ const handleSubmit = (e) => {
 
   return (
     <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="bg-pink-500 text-white px-5 py-2 rounded-lg hover:bg-pink-600"
-      >
-        Add {config.title}
-      </button>
+     
 
-      <Modal
-        isOpen={isOpen}
-        onRequestClose={() => setIsOpen(false)}
-        shouldCloseOnOverlayClick={!loading}
-        shouldCloseOnEsc={!loading}
-        className="bg-[#151821] border border-[#292e3a] w-[calc(100%-32px)] max-w-[800px] max-h-[90vh] overflow-y-auto p-8 rounded-xl outline-none"
-        overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4"
-      >
+  <Modal
+  isOpen={isOpen}
+  onRequestClose={onClose}
+  shouldCloseOnOverlayClick
+  shouldCloseOnEsc
+  className="bg-[#151821] border border-[#292e3a] w-[calc(100%-32px)] max-w-[800px] max-h-[90vh] overflow-y-auto p-8 rounded-xl outline-none"
+  overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4"
+>
         <button
-          type="button"
-          onClick={() => setIsOpen(false)}
-          className="float-right text-xl text-gray-400"
-        >
-          ✕
-        </button>
+    type="button"
+    onClick={onClose}
+    className="float-right text-xl text-gray-400"
+  >
+    ✕
+  </button>
 
-        <h2 className="text-2xl font-bold text-center text-white mb-6">
-          Add {config.title}
-        </h2>
+         <h2 className="text-2xl font-bold text-center text-white mb-6">
+    {mode === "edit" ? "Edit" : "Add"} {config.title}
+  </h2>
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4">
@@ -229,13 +232,17 @@ const handleSubmit = (e) => {
             ))}
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full mt-5 bg-pink-500 text-white p-3 rounded-lg font-semibold"
-          >
-            {loading ? "Adding Product..." : "Add Product"}
-          </button>
+        <button
+    type="submit"
+    disabled={isAdding || isUpdating}
+    className="w-full mt-5 bg-pink-500 text-white p-3 rounded-lg font-semibold"
+  >
+    {isAdding || isUpdating
+      ? "Please wait..."
+      : mode === "edit"
+      ? "Update Product"
+      : "Add Product"}
+  </button>
         </form>
       </Modal>
     </>

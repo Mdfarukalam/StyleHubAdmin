@@ -19,8 +19,21 @@ import AddProductButton from "../component/AddProductButton";
 import AddModal from "../component/AddModal";
 const Women = () => {
   const [search, setSearch] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+const [isModalOpen, setIsModalOpen] = useState(false);
+const [modalMode, setModalMode] = useState("add");
+const [selectedProduct, setSelectedProduct] = useState(null);
+
+const handleAdd = () => {
+  setSelectedProduct(null);
+  setModalMode("add");
+  setIsModalOpen(true);
+};
+
+const handleEdit = (product) => {
+  setSelectedProduct(product);
+  setModalMode("edit");
+  setIsModalOpen(true);
+};
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [selectedWomenProduct, setSelectedWomenProduct] = useState(null);
@@ -49,114 +62,14 @@ const Women = () => {
  
 
 
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Regular Fit Top",
-      category: "Tops",
-      price: "₹799",
-      stock: 42,
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Slim Fit Jeans",
-      category: "Jeans",
-      price: "₹1,499",
-      stock: 28,
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Casual Kurti",
-      category: "Kurtis",
-      price: "₹999",
-      stock: 12,
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Denim Jacket",
-      category: "Jackets",
-      price: "₹1,899",
-      stock: 0,
-      status: "Out of Stock",
-    },
-  ]);
+ 
 
-  const [form, setForm] = useState({
-    name: "",
-    category: "",
-    price: "",
-    stock: "",
-  });
+ 
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
+ 
 
-  // Add Product
-  const handleAdd = () => {
-    if (!form.name || !form.category || !form.price || !form.stock) {
-      return;
-    }
-
-    const newProduct = {
-      id: Date.now(),
-      name: form.name,
-      category: form.category,
-      price: `₹${form.price}`,
-      stock: Number(form.stock),
-      status: Number(form.stock) > 0 ? "Active" : "Out of Stock",
-    };
-
-    setProducts([...products, newProduct]);
-
-    setForm({
-      name: "",
-      category: "",
-      price: "",
-      stock: "",
-    });
-
-    setShowAddModal(false);
-  };
-
-  // Open Edit
-  const openEdit = (product) => {
-    setSelectedWomenProduct(product);
-
-    setForm({
-      name: product.name,
-      category: product.category,
-      price: product.price.replace("₹", ""),
-      stock: product.stock,
-    });
-
-    setShowEditModal(true);
-  };
-
-  // Update Product
-  const handleEdit = () => {
-    setProducts(
-      products.map((product) =>
-        product.id === selectedWomenProduct.id
-          ? {
-              ...product,
-              name: form.name,
-              category: form.category,
-              price: `₹${form.price}`,
-              stock: Number(form.stock),
-              status:
-                Number(form.stock) > 0 ? "Active" : "Out of Stock",
-            }
-          : product
-      )
-    );
-
-    setShowEditModal(false);
-    setSelectedWomenProduct(null);
-  };
+ 
+ 
 
   const { mutate: deleteProduct } = useMutationApi(
   "DELETE",
@@ -197,9 +110,19 @@ const handleDelete = () => {
           setSearch={setSearch}
           placeholder="Search users..."
         />
+          <AddProductButton  onClick={handleAdd} title="Add Women Product"></AddProductButton>
 
-          {/* Add Product */}
-<AddModal category="women" />
+ <AddModal
+  category="women"
+  mode={modalMode}
+  product={selectedProduct}
+  isOpen={isModalOpen}
+  onClose={() => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  }}
+/>
+ 
 
         </div>
       </div>
@@ -220,7 +143,7 @@ const handleDelete = () => {
             
                       <button
                         title="Edit"
-                        onClick={() => openEdit(item)}
+                        onClick={() => handleEdit(item)}
                         className="w-9 h-9 flex items-center justify-center
                         rounded-lg
                         text-gray-400

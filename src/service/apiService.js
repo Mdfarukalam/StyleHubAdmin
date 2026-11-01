@@ -59,8 +59,13 @@ export const GET = (endpoint) =>
   request(endpoint, "GET");
 
 // PUT
-export const PUT = (endpoint, payload) =>
-  request(endpoint, "PUT", payload);
+export const PUT = (endpoint, payload = {}) => {
+  const { id, ...body } = payload;
+
+  const query = new URLSearchParams({ id }).toString();
+
+  return request(`${endpoint}?${query}`, "PUT", body);
+};
 
 // DELETE
 export const DELETE = (endpoint, params = {}) => {

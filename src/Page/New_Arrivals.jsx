@@ -24,8 +24,21 @@ import AddProductButton from "../component/AddProductButton";
 const New_Arrivals = () => {
   const [search, setSearch] = useState("");
 
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+const [isModalOpen, setIsModalOpen] = useState(false);
+const [modalMode, setModalMode] = useState("add");
+const [selectedProduct, setSelectedProduct] = useState(null);
+
+const handleAdd = () => {
+  setSelectedProduct(null);
+  setModalMode("add");
+  setIsModalOpen(true);
+};
+
+const handleEdit = (product) => {
+  setSelectedProduct(product);
+  setModalMode("edit");
+  setIsModalOpen(true);
+};
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [selectedarrivalsProduct, setSelectedArrivalsProduct] = useState(null);
@@ -47,132 +60,9 @@ useEffect(() => {
   }
 }, [data]);
 
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Floral Print Saree",
-      category: "Women",
-      price: "₹1,199",
-      date: "08 Oct 2026",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Relaxed Fit Jeans",
-      category: "Men",
-      price: "₹1,599",
-      date: "07 Oct 2026",
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Kids Printed Hoodie",
-      category: "Kids",
-      price: "₹899",
-      date: "06 Oct 2026",
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Oversized Casual T-Shirt",
-      category: "Men",
-      price: "₹699",
-      date: "05 Oct 2026",
-      status: "Active",
-    },
-  ]);
+ 
 
-  const [form, setForm] = useState({
-    name: "",
-    category: "",
-    price: "",
-    date: "",
-  });
-
-  // Search
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // ================= ADD PRODUCT =================
-
-  const handleAdd = () => {
-    if (
-      !form.name ||
-      !form.category ||
-      !form.price ||
-      !form.date
-    ) {
-      return;
-    }
-
-    const newProduct = {
-      id: Date.now(),
-      name: form.name,
-      category: form.category,
-      price: `₹${form.price}`,
-      date: form.date,
-      status: "Active",
-    };
-
-    setProducts([...products, newProduct]);
-
-    setForm({
-      name: "",
-      category: "",
-      price: "",
-      date: "",
-    });
-
-    setShowAddModal(false);
-  };
-
-  // ================= OPEN EDIT =================
-
-  const openEdit = (product) => {
-    setSelectedArrivalsProduct(product);
-
-    setForm({
-      name: product.name,
-      category: product.category,
-      price: product.price.replace("₹", ""),
-      date: product.date,
-    });
-
-    setShowEditModal(true);
-  };
-
-  // ================= EDIT PRODUCT =================
-
-  const handleEdit = () => {
-    if (
-      !form.name ||
-      !form.category ||
-      !form.price ||
-      !form.date
-    ) {
-      return;
-    }
-
-    setProducts(
-      products.map((product) =>
-        product.id === selectedarrivalsProduct.id
-          ? {
-              ...product,
-              name: form.name,
-              category: form.category,
-              price: `₹${form.price}`,
-              date: form.date,
-            }
-          : product
-      )
-    );
-
-    setShowEditModal(false);
-    setSelectedArrivalsProduct(null);
-  };
-
-  // ================= DELETE PRODUCT =================
+ 
 
     const { mutate: deleteProduct } = useMutationApi(
   "DELETE",
@@ -219,9 +109,20 @@ const handleDelete = () => {
           setSearch={setSearch}
           placeholder="Search users..."
         />
+          <AddProductButton  onClick={handleAdd} title="Add arrivals Product"></AddProductButton>
 
+ <AddModal
+  category="arrivals"
+  mode={modalMode}
+  product={selectedProduct}
+  isOpen={isModalOpen}
+  onClose={() => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  }}
+/>
              {/* Add Product */}
-<AddModal category="arrivals" />
+ 
 
         </div>
 
@@ -243,7 +144,8 @@ const handleDelete = () => {
                       {/* Edit */}
                       <button
                         title="Edit"
-                        onClick={() => openEdit(item)}
+                                         onClick={() => handleEdit(item)}
+
                         className="w-9 h-9 flex items-center justify-center
                         rounded-lg
                         text-gray-400
