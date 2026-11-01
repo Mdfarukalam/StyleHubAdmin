@@ -11,8 +11,8 @@ import CommonTable from "../component/CommonTable";
 import KidTablecolumns from "./KidTableControler";
 
 import { useEffect,  } from "react";
-
-
+import toastService from "../component/toastService";
+import useMutationApi from "../service/hooks/useMutationApi";
 import API from "../ApiEndPoint/ApiUrl";
 import useGet from "../service/hooks/useGet";
 import DeleteModal from "../component/DeleteModal";
@@ -25,7 +25,7 @@ const Kids = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedKidProduct, setSelectedKidProduct] = useState(null);
 
 
 
@@ -39,7 +39,7 @@ const Kids = () => {
  
 useEffect(() => {
   if (data) {
-    setSelectedProduct(
+    setSelectedKidProduct(
       Array.isArray(data.Kid) ? data.Kid : []
     );
   }
@@ -118,7 +118,7 @@ useEffect(() => {
   };
 
   const openEdit = (product) => {
-    setSelectedProduct(product);
+    setSelectedKidProduct(product);
 
     setForm({
       name: product.name,
@@ -133,7 +133,7 @@ useEffect(() => {
   const handleEdit = () => {
     setProducts(
       products.map((product) =>
-        product.id === selectedProduct.id
+        product.id === selectedKidProduct.id
           ? {
               ...product,
               name: form.name,
@@ -148,19 +148,21 @@ useEffect(() => {
     );
 
     setShowEditModal(false);
-    setSelectedProduct(null);
+    setSelectedKidProduct(null);
   };
 
-  const handleDelete = () => {
-    setProducts(
-      products.filter(
-        (product) => product.id !== selectedProduct.id
-      )
-    );
+  const { mutate: deleteProduct } = useMutationApi(
+  "DELETE",
+  API.kidsdelete,
+  ["kidsdelete"]
+);
 
-    setShowDeleteModal(false);
-    setSelectedProduct(null);
-  };
+const handleDelete = () => {
+  deleteProduct({ id: selectedKidProduct._id });
+      setShowDeleteModal(false);
+          setSelectedMenProduct(null);
+          toastService.success("User deleted successfully");
+};
 
   return (
     <div className="min-h-screen bg-[#0f1117] text-white p-6 lg:p-8">
@@ -198,7 +200,7 @@ useEffect(() => {
      <CommonTable
         columns={KidTablecolumns}
 
-        data={selectedProduct}
+        data={selectedKidProduct}
         actions={(item) => (
 
           <div className="flex justify-end items-center gap-1 px-6 py-4">
@@ -224,7 +226,7 @@ useEffect(() => {
                       <button
                         title="Delete"
                         onClick={() => {
-                          setSelectedProduct(item);
+                          setSelectedKidProduct(item);
                           setShowDeleteModal(true);
                         }}
                         className="w-9 h-9 flex items-center justify-center
@@ -249,8 +251,8 @@ useEffect(() => {
          <DeleteModal
         isOpen={showDeleteModal}
         setIsOpen={setShowDeleteModal}
-        selectedUser={selectedProduct}
-        setSelectedUser={setSelectedProduct}
+        selectedUser={selectedKidProduct}
+        setSelectedUser={setSelectedKidProduct}
         handleDelete={handleDelete}
       />
 

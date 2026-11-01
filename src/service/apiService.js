@@ -63,8 +63,10 @@ export const PUT = (endpoint, payload) =>
   request(endpoint, "PUT", payload);
 
 // DELETE
-export const DELETE = (endpoint) =>
-  request(endpoint, "DELETE");
+export const DELETE = (endpoint, params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return request(`${endpoint}?${query}`, "DELETE");
+};
 
 // Export all
 const apiService = { POST, GET, PUT, DELETE };

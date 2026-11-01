@@ -7,7 +7,8 @@ import {
   Users,
 } from "lucide-react";
 
-import { toast } from "react-toastify";
+import toastService from "../component/toastService";
+
 import API from "../ApiEndPoint/ApiUrl";
 import useGet from "../service/hooks/useGet";
 import CommonTable from "../component/CommonTable";
@@ -78,10 +79,11 @@ const User = () => {
       )
     );
 
-    toast.success("User deleted successfully");
-
+toastService.success("User deleted successfully");
     setShowDeleteModal(false);
     setSelectedUser(null);
+              toastService.success("User deleted successfully");
+
   };
 
 

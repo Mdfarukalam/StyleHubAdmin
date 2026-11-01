@@ -7,11 +7,11 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-
+import toastService from "../component/toastService";
 import CommonSearch from "../component/CommonSearch";
 import CommonTable from "../component/CommonTable";
 import WomenTablecolumns from "./WomenTableControler";
-
+import useMutationApi from "../service/hooks/useMutationApi";
 import API from "../ApiEndPoint/ApiUrl";
 import useGet from "../service/hooks/useGet";
 import DeleteModal from "../component/DeleteModal";
@@ -22,7 +22,7 @@ const Women = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedWomenProduct, setSelectedWomenProduct] = useState(null);
 
 
 
@@ -39,7 +39,7 @@ const Women = () => {
        ? data
        : data.GetWomenProducts || [];
  
-     setSelectedProduct(
+     setSelectedWomenProduct(
        Array.isArray(userData) ? userData : []
      );
    }
@@ -123,7 +123,7 @@ const Women = () => {
 
   // Open Edit
   const openEdit = (product) => {
-    setSelectedProduct(product);
+    setSelectedWomenProduct(product);
 
     setForm({
       name: product.name,
@@ -139,7 +139,7 @@ const Women = () => {
   const handleEdit = () => {
     setProducts(
       products.map((product) =>
-        product.id === selectedProduct.id
+        product.id === selectedWomenProduct.id
           ? {
               ...product,
               name: form.name,
@@ -154,20 +154,22 @@ const Women = () => {
     );
 
     setShowEditModal(false);
-    setSelectedProduct(null);
+    setSelectedWomenProduct(null);
   };
 
-  // Delete Product
-  const handleDelete = () => {
-    setProducts(
-      products.filter(
-        (product) => product.id !== selectedProduct.id
-      )
-    );
+  const { mutate: deleteProduct } = useMutationApi(
+  "DELETE",
+  API.women.delete,
+  ["women"]
+);
 
-    setShowDeleteModal(false);
-    setSelectedProduct(null);
-  };
+const handleDelete = () => {
+  deleteProduct({ id: selectedWomenProduct._id });
+      setShowDeleteModal(false);
+    setSelectedMenProduct(null);
+              toastService.success("User deleted successfully");
+
+};
 
   return (
     <div className="min-h-screen bg-[#0f1117] text-white p-6 lg:p-8">
@@ -208,7 +210,7 @@ const Women = () => {
          <CommonTable
         columns={WomenTablecolumns}
 
-        data={selectedProduct}
+        data={selectedWomenProduct}
         actions={(item) => (
 
           <div className="flex justify-end items-center gap-1 px-6 py-4">
@@ -234,7 +236,7 @@ const Women = () => {
                       <button
                         title="Delete"
                         onClick={() => {
-                          setSelectedProduct(item);
+                          setSelectedWomenProduct(item);
                           setShowDeleteModal(true);
                         }}
                         className="w-9 h-9 flex items-center justify-center
@@ -258,8 +260,8 @@ const Women = () => {
       <DeleteModal
         isOpen={showDeleteModal}
         setIsOpen={setShowDeleteModal}
-        selectedUser={selectedProduct}
-        setSelectedUser={setSelectedProduct}
+        selectedUser={selectedWomenProduct}
+        setSelectedUser={setSelectedWomenProduct}
         handleDelete={handleDelete}
       />
 

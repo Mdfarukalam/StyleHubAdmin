@@ -11,12 +11,13 @@ import CommonTable from "../component/CommonTable";
 
 import { useEffect,  } from "react";
 
-
+import useMutationApi from "../service/hooks/useMutationApi";
 import API from "../ApiEndPoint/ApiUrl";
 import useGet from "../service/hooks/useGet";
 import DeleteModal from "../component/DeleteModal";
 import CommonSearch from "../component/CommonSearch";
 import AddProductButton from "../component/AddProductButton";
+import toastService from "../component/toastService";
 
 const Top_Product = () => {
   const [search, setSearch] = useState("");
@@ -25,7 +26,7 @@ const Top_Product = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedTopProduct, setSelectedTopProduct] = useState(null);
 
 
   const {
@@ -43,7 +44,7 @@ const Top_Product = () => {
       ? data
       : data.TopProduct || [];
 
-    setSelectedProduct(
+    setSelectedTopProduct(
       Array.isArray(userData) ? userData : []
     );
   }
@@ -133,7 +134,7 @@ const Top_Product = () => {
   // ================= OPEN EDIT =================
 
   const openEdit = (product) => {
-    setSelectedProduct(product);
+    setSelectedTopProduct(product);
 
     setForm({
       name: product.name,
@@ -159,7 +160,7 @@ const Top_Product = () => {
 
     setProducts(
       products.map((product) =>
-        product.id === selectedProduct.id
+        product.id === selectedTopProduct.id
           ? {
               ...product,
               name: form.name,
@@ -172,21 +173,23 @@ const Top_Product = () => {
     );
 
     setShowEditModal(false);
-    setSelectedProduct(null);
+    setSelectedTopProduct(null);
   };
 
   // ================= DELETE PRODUCT =================
 
-  const handleDelete = () => {
-    setProducts(
-      products.filter(
-        (product) => product.id !== selectedProduct.id
-      )
-    );
+  const { mutate: deleteProduct } = useMutationApi(
+  "DELETE",
+  API.topProducts.delete,
+  ["topProducts"]
+);
 
-    setShowDeleteModal(false);
-    setSelectedProduct(null);
-  };
+const handleDelete = () => {
+  deleteProduct({ id: selectedTopProduct._id });
+      setShowDeleteModal(false);
+          setSelectedMenProduct(null);
+          toastService.success("User deleted successfully");
+};
 
   return (
     <div className="min-h-screen bg-[#0f1117] text-white p-6 lg:p-8">
@@ -228,7 +231,7 @@ const Top_Product = () => {
         <CommonTable
         columns={Top_productTablecolumns}
 
-        data={selectedProduct}
+        data={selectedTopProduct}
         actions={(item) => (
 
           <div className="flex justify-end items-center gap-1 px-6 py-4">
@@ -254,7 +257,7 @@ const Top_Product = () => {
                       <button
                         title="Delete"
                         onClick={() => {
-                          setSelectedProduct(item);
+                          setSelectedTopProduct(item);
                           setShowDeleteModal(true);
                         }}
                         className="w-9 h-9 flex items-center justify-center
@@ -280,8 +283,8 @@ const Top_Product = () => {
       <DeleteModal
         isOpen={showDeleteModal}
         setIsOpen={setShowDeleteModal}
-        selectedUser={selectedProduct}
-        setSelectedUser={setSelectedProduct}
+        selectedUser={selectedTopProduct}
+        setSelectedUser={setSelectedTopProduct}
         handleDelete={handleDelete}
       />
 

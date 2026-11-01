@@ -9,8 +9,9 @@ import {
 import CommonSearch from "../component/CommonSearch";
 import DeleteModal from "../component/DeleteModal";
 import { useEffect,  } from "react";
+import toastService from "../component/toastService";
 
-
+import useMutationApi from "../service/hooks/useMutationApi";
 import API from "../ApiEndPoint/ApiUrl";
 import useGet from "../service/hooks/useGet";
 import CommonTable from "../component/CommonTable";
@@ -22,7 +23,7 @@ const Men = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedMenProduct, setSelectedMenProduct] = useState(null);
 
 
 
@@ -42,7 +43,7 @@ const Men = () => {
       ? data
       : data.GetMenProduts || [];
 
-    setSelectedProduct(
+    setSelectedMenProduct(
       Array.isArray(userData) ? userData : []
     );
   }
@@ -127,7 +128,7 @@ const Men = () => {
 
   // Open Edit
   const openEdit = (product) => {
-    setSelectedProduct(product);
+    setSelectedMenProduct(product);
 
     setForm({
       name: product.name,
@@ -143,7 +144,7 @@ const Men = () => {
   const handleEdit = () => {
     setProducts(
       products.map((product) =>
-        product.id === selectedProduct.id
+        product.id === selectedMenProduct.id
           ? {
               ...product,
               name: form.name,
@@ -158,20 +159,26 @@ const Men = () => {
     );
 
     setShowEditModal(false);
-    setSelectedProduct(null);
+    setSelectedMenProduct(null);
   };
 
-  // Delete Product
-  const handleDelete = () => {
-    setProducts(
-      products.filter(
-        (product) => product.id !== selectedProduct.id
-      )
-    );
 
-    setShowDeleteModal(false);
-    setSelectedProduct(null);
-  };
+
+  const { mutate: deleteProduct } = useMutationApi(
+  "DELETE",
+  API.mendelete,
+  ["men"]
+);
+
+const handleDelete = () => {
+  deleteProduct({ id: selectedMenProduct._id });
+      setShowDeleteModal(false);
+    setSelectedMenProduct(null);
+    toastService.success("User deleted successfully");
+};
+
+   
+ 
 
   return (
     <div className="min-h-screen bg-[#0f1117] text-white p-6 lg:p-8">
@@ -212,10 +219,12 @@ const Men = () => {
    <CommonTable
         columns={MenTablecolumns}
 
-        data={selectedProduct}
-        actions={(item) => (
-
-          <div className="flex justify-end items-center gap-1 px-6 py-4">
+        data={selectedMenProduct}
+        actions={(item) => 
+        {
+          console.log(item,"item")
+          return(
+                <div className="flex justify-end items-center gap-1 px-6 py-4">
 
           <div className="flex justify-end gap-1">
 
@@ -238,7 +247,7 @@ const Men = () => {
                       <button
                         title="Delete"
                         onClick={() => {
-                          setSelectedProduct(item);
+                          setSelectedMenProduct(item);
                           setShowDeleteModal(true);
                         }}
                         className="w-9 h-9 flex items-center justify-center
@@ -254,7 +263,9 @@ const Men = () => {
                     </div>
 
           </div>
-        )}
+          )
+        }
+        }
      
       />
 
@@ -453,8 +464,8 @@ const Men = () => {
       <DeleteModal
         isOpen={showDeleteModal}
         setIsOpen={setShowDeleteModal}
-        selectedUser={selectedProduct}
-        setSelectedUser={setSelectedProduct}
+        selectedUser={selectedMenProduct}
+        setSelectedUser={setSelectedMenProduct}
         handleDelete={handleDelete}
       />
 

@@ -16,10 +16,12 @@ const totalRecords = data?.length;
 
 const totalPages = Math.ceil(totalRecords / pageSize);
 
-const paginatedData = data?.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-);
+const paginatedData = Array.isArray(data)
+    ? data.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize
+      )
+    : [];
 
 useEffect(() => {
     if (currentPage > Math.max(totalPages, 1)) {

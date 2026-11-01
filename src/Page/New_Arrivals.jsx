@@ -9,9 +9,10 @@ import {
 
 
 import CommonTable from "../component/CommonTable";
- 
+ import useMutationApi from "../service/hooks/useMutationApi";
 import New_ArrivalsTablecolumns from "./New_ArrivalsControler";
 import { useEffect,  } from "react";
+import toastService from "../component/toastService";
 
 
 import API from "../ApiEndPoint/ApiUrl";
@@ -27,7 +28,7 @@ const New_Arrivals = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedarrivalsProduct, setSelectedArrivalsProduct] = useState(null);
 
 
      const {
@@ -40,7 +41,7 @@ const New_Arrivals = () => {
  
 useEffect(() => {
   if (data) {
-    setSelectedProduct(
+    setSelectedArrivalsProduct(
       Array.isArray(data.GetArrivalsProduts) ? data.GetArrivalsProduts : []
     );
   }
@@ -129,7 +130,7 @@ useEffect(() => {
   // ================= OPEN EDIT =================
 
   const openEdit = (product) => {
-    setSelectedProduct(product);
+    setSelectedArrivalsProduct(product);
 
     setForm({
       name: product.name,
@@ -155,7 +156,7 @@ useEffect(() => {
 
     setProducts(
       products.map((product) =>
-        product.id === selectedProduct.id
+        product.id === selectedarrivalsProduct.id
           ? {
               ...product,
               name: form.name,
@@ -168,21 +169,23 @@ useEffect(() => {
     );
 
     setShowEditModal(false);
-    setSelectedProduct(null);
+    setSelectedArrivalsProduct(null);
   };
 
   // ================= DELETE PRODUCT =================
 
-  const handleDelete = () => {
-    setProducts(
-      products.filter(
-        (product) => product.id !== selectedProduct.id
-      )
-    );
+    const { mutate: deleteProduct } = useMutationApi(
+  "DELETE",
+  API.arrivals.delete,
+  ["arrivals"]
+);
 
-    setShowDeleteModal(false);
-    setSelectedProduct(null);
-  };
+const handleDelete = () => {
+  deleteProduct({ id: selectedarrivalsProduct._id });
+      setShowDeleteModal(false);
+          setSelectedMenProduct(null);
+          toastService.success("User deleted successfully");
+};
 
   return (
     
@@ -231,7 +234,7 @@ useEffect(() => {
         <CommonTable
         columns={New_ArrivalsTablecolumns}
 
-        data={selectedProduct}
+        data={selectedarrivalsProduct}
         actions={(item) => (
 
           <div className="flex justify-end items-center gap-1 px-6 py-4">
@@ -257,7 +260,7 @@ useEffect(() => {
                       <button
                         title="Delete"
                         onClick={() => {
-                          setSelectedProduct(item);
+                          setSelectedArrivalsProduct(item);
                           setShowDeleteModal(true);
                         }}
                         className="w-9 h-9 flex items-center justify-center
@@ -283,8 +286,8 @@ useEffect(() => {
       <DeleteModal
         isOpen={showDeleteModal}
         setIsOpen={setShowDeleteModal}
-        selectedUser={selectedProduct}
-        setSelectedUser={setSelectedProduct}
+        selectedUser={selectedarrivalsProduct}
+        setSelectedUser={setSelectedArrivalsProduct}
         handleDelete={handleDelete}
       />
 
