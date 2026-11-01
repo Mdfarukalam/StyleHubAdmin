@@ -186,9 +186,10 @@ const Top_Product = () => {
 
 const handleDelete = () => {
   deleteProduct({ id: selectedTopProduct._id });
+            toastService.success("Top Product deleted successfully");
+
       setShowDeleteModal(false);
           setSelectedMenProduct(null);
-          toastService.success("User deleted successfully");
 };
 
   return (

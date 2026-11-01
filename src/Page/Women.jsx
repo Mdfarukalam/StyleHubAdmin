@@ -165,9 +165,10 @@ const Women = () => {
 
 const handleDelete = () => {
   deleteProduct({ id: selectedWomenProduct._id });
+   toastService.success("Women deleted successfully");
       setShowDeleteModal(false);
     setSelectedMenProduct(null);
-              toastService.success("User deleted successfully");
+              
 
 };
 

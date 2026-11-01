@@ -182,9 +182,10 @@ useEffect(() => {
 
 const handleDelete = () => {
   deleteProduct({ id: selectedarrivalsProduct._id });
+     toastService.success("New Arrivals deleted successfully");
       setShowDeleteModal(false);
           setSelectedMenProduct(null);
-          toastService.success("User deleted successfully");
+        
 };
 
   return (

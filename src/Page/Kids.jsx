@@ -159,10 +159,11 @@ useEffect(() => {
 
 const handleDelete = () => {
   deleteProduct({ id: selectedKidProduct._id });
+            toastService.success("Kid deleted successfully");
+
       setShowDeleteModal(false);
           setSelectedMenProduct(null);
-          toastService.success("User deleted successfully");
-};
+ };
 
   return (
     <div className="min-h-screen bg-[#0f1117] text-white p-6 lg:p-8">
