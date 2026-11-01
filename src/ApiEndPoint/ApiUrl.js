@@ -41,6 +41,8 @@ export const API = {
     get: "/api/admin/ListArrivalsProducts",
     delete: "/api/admin/DeleteArrivalsProducts",
   },
+
+  DeletedUsers:"/api/admin/DeletedUsers",
 };
 
 export default API;

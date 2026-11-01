@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 import toastService from "../component/toastService";
-
+import useMutationApi from "../service/hooks/useMutationApi";
 import API from "../ApiEndPoint/ApiUrl";
 import useGet from "../service/hooks/useGet";
 import CommonTable from "../component/CommonTable";
@@ -69,22 +69,20 @@ const User = () => {
     setShowDeleteModal(true);
   };
 
-  // Delete user
-  const handleDelete = () => {
-    if (!selectedUser) return;
+  const { mutate: deleteProduct } = useMutationApi(
+  "DELETE",
+  API.DeletedUsers,
+  ["DeletedUsers"]
+);
 
-    setUsers((prevUsers) =>
-      prevUsers.filter(
-        (user) => user._id !== selectedUser._id
-      )
-    );
+const handleDelete = () => {
+  deleteProduct({ id: selectedUser._id });
+   toastService.success("User deleted successfully");
+      setShowDeleteModal(false);
+    setSelectedMenProduct(null);
+              
 
-toastService.success("User deleted successfully");
-    setShowDeleteModal(false);
-    setSelectedUser(null);
-              toastService.success("User deleted successfully");
-
-  };
+};
 
 
 

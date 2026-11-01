@@ -33,7 +33,7 @@ function DeleteModal({
       <p className="text-sm text-gray-400 mt-2 leading-6">
         Are you sure you want to delete{" "}
         <span className="text-white font-medium">
-          {selectedUser?.name || "this user"}
+       {selectedUser?.name?.fullName || selectedUser?.fullName || "this user"}
         </span>
         ?
 
