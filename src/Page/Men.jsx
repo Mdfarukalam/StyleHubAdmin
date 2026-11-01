@@ -6,7 +6,15 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import CommonSearch from "../component/CommonSearch";
+import DeleteModal from "../component/DeleteModal";
+import { useEffect,  } from "react";
 
+
+import API from "../ApiEndPoint/ApiUrl";
+import useGet from "../service/hooks/useGet";
+import CommonTable from "../component/CommonTable";
+import MenTablecolumns from "./MenTableControler";
 const Men = () => {
   const [search, setSearch] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -14,6 +22,34 @@ const Men = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+
+
+ 
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useGet(["men"], API.menget);
+
+ 
+ 
+
+ useEffect(() => {
+  if (data) {
+    const userData = Array.isArray(data)
+      ? data
+      : data.GetMenProduts || [];
+
+    setSelectedProduct(
+      Array.isArray(userData) ? userData : []
+    );
+  }
+}, [data]);
+
+
+
+
 
   const [products, setProducts] = useState([
     {
@@ -154,27 +190,12 @@ const Men = () => {
 
         <div className="flex flex-col sm:flex-row gap-3">
 
-          {/* Search */}
-          <div className="relative w-full sm:w-[280px]">
-            <Search
-              size={18}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"
-            />
-
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-[42px] pl-10 pr-4
-              bg-[#151821]
-              border border-[#292e3a]
-              rounded-lg
-              text-sm text-gray-200
-              outline-none
-              focus:border-pink-500"
-            />
-          </div>
+     
+        <CommonSearch
+          search={search}
+          setSearch={setSearch}
+          placeholder="Search users..."
+        />
 
           {/* Add Product */}
           <button
@@ -194,132 +215,22 @@ const Men = () => {
       </div>
 
 
-      {/* Product Table */}
-      <div className="bg-[#151821] border border-[#292e3a] rounded-xl overflow-hidden">
-
-        <div className="overflow-x-auto">
-
-          <table className="w-full min-w-[850px]">
-
-            <thead>
-
-              <tr className="bg-[#1b1f2a] border-b border-[#292e3a]">
-
-                <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">
-                  Product
-                </th>
-
-                <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">
-                  Category
-                </th>
-
-                <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">
-                  Price
-                </th>
-
-                <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">
-                  Stock
-                </th>
-
-                <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">
-                  Status
-                </th>
-
-                <th className="px-6 py-4 text-right text-[11px] uppercase tracking-wider text-gray-400">
-                  Actions
-                </th>
-
-              </tr>
-
-            </thead>
 
 
-            <tbody className="divide-y divide-[#292e3a]">
+   <CommonTable
+        columns={MenTablecolumns}
 
-              {filteredProducts.map((product) => (
+        data={selectedProduct}
+        actions={(item) => (
 
-                <tr
-                  key={product.id}
-                  className="hover:bg-[#1b1f2a] transition"
-                >
+          <div className="flex justify-end items-center gap-1 px-6 py-4">
 
-                  {/* Product */}
-                  <td className="px-6 py-4">
-
-                    <div className="flex items-center gap-3">
-
-                      {/* <div className="w-11 h-11 rounded-lg bg-[#252a36] flex items-center justify-center text-gray-500">
-                        Product
-                      </div> */}
-
-                      <div>
-                        <p className="text-sm font-medium text-gray-200">
-                          {product.name}
-                        </p>
-
-                        <p className="text-xs text-gray-500 mt-1">
-                          Product #{String(product.id).padStart(4, "0")}
-                        </p>
-                      </div>
-
-                    </div>
-
-                  </td>
-
-
-                  {/* Category */}
-                  <td className="px-6 py-4 text-sm text-gray-400">
-                    {product.category}
-                  </td>
-
-
-                  {/* Price */}
-                  <td className="px-6 py-4 text-sm font-medium text-gray-200">
-                    {product.price}
-                  </td>
-
-
-                  {/* Stock */}
-                  <td className="px-6 py-4 text-sm text-gray-400">
-                    {product.stock}
-                  </td>
-
-
-                  {/* Status */}
-                  <td className="px-6 py-4">
-
-                    <span
-                      className={`inline-flex items-center gap-2 text-xs font-medium ${
-                        product.status === "Active"
-                          ? "text-emerald-400"
-                          : "text-red-400"
-                      }`}
-                    >
-
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          product.status === "Active"
-                            ? "bg-emerald-400"
-                            : "bg-red-400"
-                        }`}
-                      />
-
-                      {product.status}
-
-                    </span>
-
-                  </td>
-
-
-                  {/* Actions */}
-                  <td className="px-6 py-4">
-
-                    <div className="flex justify-end gap-1">
+          <div className="flex justify-end gap-1">
 
                       {/* Edit */}
                       <button
                         title="Edit"
-                        onClick={() => openEdit(product)}
+                        onClick={() => openEdit(item)}
                         className="w-9 h-9 flex items-center justify-center
                         rounded-lg
                         text-gray-400
@@ -335,7 +246,7 @@ const Men = () => {
                       <button
                         title="Delete"
                         onClick={() => {
-                          setSelectedProduct(product);
+                          setSelectedProduct(item);
                           setShowDeleteModal(true);
                         }}
                         className="w-9 h-9 flex items-center justify-center
@@ -350,34 +261,12 @@ const Men = () => {
 
                     </div>
 
-                  </td>
+          </div>
+        )}
+     
+      />
 
-                </tr>
-
-              ))}
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-
-        {/* Footer */}
-        <div className="h-[58px] px-6 border-t border-[#292e3a] flex items-center justify-between">
-
-          <p className="text-xs text-gray-500">
-            Showing {filteredProducts.length} of {products.length} products
-          </p>
-
-          <p className="text-xs text-gray-600">
-            Men's Collection
-          </p>
-
-        </div>
-
-      </div>
-
+   
 
       {/* ================= ADD MODAL ================= */}
 
@@ -567,52 +456,15 @@ const Men = () => {
       )}
 
 
-      {/* ================= DELETE MODAL ================= */}
+   
 
-      {showDeleteModal && (
-
-        <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4">
-
-          <div className="w-full max-w-[400px] bg-[#151821] border border-[#292e3a] rounded-xl p-6">
-
-            <h2 className="text-lg font-semibold">
-              Delete Product
-            </h2>
-
-            <p className="text-sm text-gray-400 mt-2 leading-6">
-              Are you sure you want to delete{" "}
-              <span className="text-white font-medium">
-                {selectedProduct?.name}
-              </span>
-              ?
-              <br />
-              This action cannot be undone.
-            </p>
-
-
-            <div className="flex justify-end gap-3 mt-6">
-
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-lg bg-[#252a36] text-sm"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleDelete}
-                className="px-5 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-sm font-medium"
-              >
-                Delete
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      )}
+      <DeleteModal
+        isOpen={showDeleteModal}
+        setIsOpen={setShowDeleteModal}
+        selectedUser={selectedProduct}
+        setSelectedUser={setSelectedProduct}
+        handleDelete={handleDelete}
+      />
 
     </div>
   );

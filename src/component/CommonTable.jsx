@@ -1,12 +1,32 @@
+
+import { useState, useEffect } from "react";
 function CommonTable({
     columns,
     data = [],
     actions,
-    currentPage,
-    totalPages,
-    totalRecords,
-    onPageChange,
+   
 }) {
+
+
+ const [currentPage, setCurrentPage] = useState(1);
+
+const pageSize = 10;
+
+const totalRecords = data?.length;
+
+const totalPages = Math.ceil(totalRecords / pageSize);
+
+const paginatedData = data?.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+);
+
+useEffect(() => {
+    if (currentPage > Math.max(totalPages, 1)) {
+        setCurrentPage(Math.max(totalPages, 1));
+    }
+}, [data, currentPage, totalPages]);
+
     return (
         <div className="bg-[#181b21] border border-[#2a2e36] rounded-xl overflow-hidden">
 
@@ -37,8 +57,8 @@ function CommonTable({
 
                     <tbody className="divide-y divide-[#252931]">
 
-                        {data.length > 0 ? (
-                            data.map((item, index) => (
+                        {paginatedData?.length > 0 ? (
+                            paginatedData?.map((item, index) => (
                                 <tr
                                     key={item._id || index}
                                     className="hover:bg-[#1e2229] transition"
@@ -97,7 +117,7 @@ function CommonTable({
                 <div className="flex items-center gap-3">
 
                     <button
-                        onClick={() => onPageChange(currentPage - 1)}
+                        onClick={() => setCurrentPage(currentPage - 1)}
                         disabled={currentPage <= 1}
                         className="px-3 py-2 rounded-lg bg-[#252a36] text-xs text-gray-300 hover:bg-[#303644] disabled:opacity-30"
                     >
@@ -109,7 +129,7 @@ function CommonTable({
                     </span>
 
                     <button
-                        onClick={() => onPageChange(currentPage + 1)}
+                        onClick={() => setCurrentPage(currentPage + 1)}
                         disabled={currentPage >= totalPages}
                         className="px-3 py-2 rounded-lg bg-pink-500 text-xs text-white hover:bg-pink-600 disabled:opacity-30"
                     >

@@ -1,13 +1,12 @@
 export const API = {
   Admin_Login: "/api/admin/LoginAdmin",
 
-  // MEN
-  men: {
-    add: "/api/admin/MenProduct",
-    edit: "/api/admin/EditeMenProducts",
-    delete: "/api/admin/DeletedMenProducts",
-    get: "/api/admin/ListMenProducts",
-  },
+ 
+    menadd: "/api/admin/MenProduct",
+    menedit: "/api/admin/EditeMenProducts",
+    mendelete: "/api/admin/DeletedMenProducts",
+    menget: "/api/admin/ListMenProducts",
+ 
 
   // WOMEN
   women: {
