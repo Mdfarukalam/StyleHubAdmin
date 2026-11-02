@@ -52,6 +52,7 @@ body {
 input,
 button {
   font-family: inherit;
+  cursor: pointer;
 }
 
 input::placeholder {
