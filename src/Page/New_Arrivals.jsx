@@ -44,13 +44,19 @@ const handleEdit = (product) => {
   const [selectedarrivalsProduct, setSelectedArrivalsProduct] = useState(null);
 
 
-     const {
-    data,
-    isLoading,
-    isError,
-  } = useGet(["arrivals"], API.arrivals.get);
+ 
 
  
+
+   const {
+  data,
+  isLoading,
+  isError,
+} = useGet(
+  ["arrivals", search],
+  `${API.arrivals.get}?search=${encodeURIComponent(search)}`
+);
+
  
 useEffect(() => {
   if (data) {

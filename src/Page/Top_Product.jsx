@@ -42,13 +42,16 @@ const handleEdit = (product) => {
   const [selectedTopProduct, setSelectedTopProduct] = useState(null);
 
 
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useGet(["topProducts"], API.topProducts.get);
-
  
+
+   const {
+  data,
+  isLoading,
+  isError,
+} = useGet(
+  ["topProducts", search],
+  `${API.topProducts.get}?search=${encodeURIComponent(search)}`
+);
  
 
  useEffect(() => {

@@ -39,12 +39,15 @@ const handleEdit = (product) => {
   const [selectedWomenProduct, setSelectedWomenProduct] = useState(null);
 
 
-
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useGet(["women"], API.women.get);
+ const {
+  data,
+  isLoading,
+  isError,
+} = useGet(
+  ["women", search],
+  `${API.women.get}?search=${encodeURIComponent(search)}`
+);
+ 
 
  
   useEffect(() => {

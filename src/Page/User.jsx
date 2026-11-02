@@ -26,11 +26,24 @@ const User = () => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   // GET ALL USERS API
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useGet(["users"], API.users);
+  // const {
+  //   data,
+  //   isLoading,
+  //   isError,
+  // } = useGet(["users"], API.users);
+
+
+
+   const {
+  data,
+  isLoading,
+  isError,
+} = useGet(
+  ["users", search],
+  `${API.users}?search=${encodeURIComponent(search)}`
+);
+
+
 
   // API response ko users array mein convert karna
   useEffect(() => {

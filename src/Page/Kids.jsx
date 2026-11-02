@@ -45,13 +45,16 @@ const Kids = () => {
 
 
 
-    const {
-    data,
-    isLoading,
-    isError,
-  } = useGet(["kids"], API.kidsget);
-
  
+
+  const {
+  data,
+  isLoading,
+  isError,
+} = useGet(
+  ["kids", search],
+  `${API.kidsget}?search=${encodeURIComponent(search)}`
+);
  
 useEffect(() => {
   if (data) {

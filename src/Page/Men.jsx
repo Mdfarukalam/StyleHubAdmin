@@ -28,6 +28,7 @@ const Men = () => {
 
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [modalMode, setModalMode] = useState("add");
+
 const [selectedProduct, setSelectedProduct] = useState(null);
 
 const handleAdd = () => {
@@ -42,11 +43,14 @@ const handleEdit = (product) => {
   setIsModalOpen(true);
 };
  
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useGet(["men"], API.menget);
+ const {
+  data,
+  isLoading,
+  isError,
+} = useGet(
+  ["men", search],
+  `${API.menget}?search=${encodeURIComponent(search)}`
+);
 
  
  
