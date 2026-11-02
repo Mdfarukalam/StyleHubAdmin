@@ -10,19 +10,17 @@ export const productFields = {
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
               // Image Upload
-      {
-        name: "images",
-        label: "Upload Product Image",
-        type: "image",
-        required: true,
-      },
+   
             { name: "price", label: "Selling Price", type: "number", required: true },
             { name: "originalPrice", label: "Original Price", type: "number", required: true },
             { name: "discount", label: "Discount", type: "number", required: true },
             { name: "description", label: "Description", type: "textarea" },
           
-            { name: "colors", label: "Colors (Black, White)", type: "text" },
-            { name: "sizes", label: "Sizes No (S, M, L)", type: "text" },
+      {
+  name: "colorVariants",
+  label: "Product Colors, Images & Sizes",
+  type: "colorVariants",
+},
             { name: "stock", label: "Stock", type: "number" },
             { name: "rating", label: "Rating", type: "number" },
             { name: "isActive", label: "Active Product", type: "checkbox" },
@@ -44,19 +42,17 @@ export const productFields = {
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
               // Image Upload
-      {
-        name: "images",
-        label: "Upload Product Image",
-        type: "image",
-        required: true,
-      },
+ 
             { name: "price", label: "Selling Price", type: "number", required: true },
             { name: "originalPrice", label: "Original Price", type: "number", required: true },
             { name: "discount", label: "Discount", type: "number", required: true },
             { name: "description", label: "Description", type: "textarea" },
           
-            { name: "colors", label: "Colors (Black, White)", type: "text" },
-            { name: "sizes", label: "Sizes (S, M, L)", type: "text" },
+          {
+  name: "colorVariants",
+  label: "Product Colors, Images & Sizes",
+  type: "colorVariants",
+},
             { name: "stock", label: "Stock", type: "number" },
             { name: "rating", label: "Rating", type: "number" },
             { name: "isActive", label: "Active Product", type: "checkbox" },
@@ -75,19 +71,17 @@ export const productFields = {
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
               // Image Upload
-      {
-        name: "images",
-        label: "Upload Product Image",
-        type: "image",
-        required: true,
-      },
+   
             { name: "price", label: "Selling Price", type: "number", required: true },
             { name: "originalPrice", label: "Original Price", type: "number", required: true },
             { name: "discount", label: "Discount", type: "number", required: true },
             { name: "description", label: "Description", type: "textarea" },
           
-            { name: "colors", label: "Colors (Black, White)", type: "text" },
-            { name: "sizes", label: "Sizes (S, M, L)", type: "text" },
+   {
+  name: "colorVariants",
+  label: "Product Colors, Images & Sizes",
+  type: "colorVariants",
+},
             { name: "stock", label: "Stock", type: "number" },
             { name: "rating", label: "Rating", type: "number" },
             { name: "isActive", label: "Active Product", type: "checkbox" },
@@ -109,19 +103,17 @@ export const productFields = {
             },
 
               // Image Upload
-      {
-        name: "images",
-        label: "Upload Product Image",
-        type: "image",
-        required: true,
-      },
+ 
             { name: "price", label: "Selling Price", type: "number", required: true },
             { name: "originalPrice", label: "Original Price", type: "number", required: true },
             { name: "discount", label: "Discount", type: "number", required: true },
             { name: "description", label: "Description", type: "textarea" },
           
-            { name: "colors", label: "Colors (Black, White)", type: "text" },
-            { name: "sizes", label: "Sizes (S, M, L)", type: "text" },
+       {
+  name: "colorVariants",
+  label: "Product Colors, Images & Sizes",
+  type: "colorVariants",
+},
             { name: "stock", label: "Stock", type: "number" },
             { name: "rating", label: "Rating", type: "number" },
             { name: "isActive", label: "Active Product", type: "checkbox" },
@@ -141,19 +133,17 @@ export const productFields = {
             },
 
               // Image Upload
-      {
-        name: "images",
-        label: "Upload Product Image",
-        type: "image",
-        required: true,
-      },
+   
             { name: "price", label: "Selling Price", type: "number", required: true },
             { name: "originalPrice", label: "Original Price", type: "number", required: true },
             { name: "discount", label: "Discount", type: "number", required: true },
             { name: "description", label: "Description", type: "textarea" },
           
-            { name: "colors", label: "Colors (Black, White)", type: "text" },
-            { name: "sizes", label: "Sizes (S, M, L)", type: "text" },
+{
+  name: "colorVariants",
+  label: "Product Colors, Images & Sizes",
+  type: "colorVariants",
+},
             { name: "stock", label: "Stock", type: "number" },
             { name: "rating", label: "Rating", type: "number" },
             { name: "isActive", label: "Active Product", type: "checkbox" },

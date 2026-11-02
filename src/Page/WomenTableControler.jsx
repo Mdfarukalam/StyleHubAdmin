@@ -2,14 +2,15 @@
    {
   label: "Product",
   key: "name",
-  render: (user) => (
+ render: (user) => {
+  const productImage = user.colorVariants?.[0]?.images;
+
+  return (
     <div className="flex items-center gap-3">
-
       <div className="w-12 h-12 rounded-lg overflow-hidden border border-[#2a2e36] bg-[#252932] flex items-center justify-center shrink-0">
-
-        {user.images ? (
+        {productImage ? (
           <img
-            src={user.images}
+            src={productImage}
             alt={user.name || "Product"}
             className="w-full h-full object-cover"
             loading="lazy"
@@ -22,11 +23,10 @@
 
         <div
           className="w-full h-full items-center justify-center text-gray-500 text-xl"
-          style={{ display: user.images ? "none" : "flex" }}
+          style={{ display: productImage ? "none" : "flex" }}
         >
           📦
         </div>
-
       </div>
 
       <div>
@@ -37,10 +37,14 @@
         <p className="text-xs text-gray-500 mt-0.5">
           Product #{String(user._id || "")}
         </p>
-      </div>
 
+        <p className="text-xs text-gray-500 mt-0.5">
+          {user.colorVariants?.length || 0} Colors
+        </p>
+      </div>
     </div>
-  ),
+  );
+},
 },
     {
       label: "Category", key: "category",
