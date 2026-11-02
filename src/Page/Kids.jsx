@@ -23,6 +23,7 @@ const Kids = () => {
   const [search, setSearch] = useState("");
  
 
+const [kidProducts, setkidProducts] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("add");
@@ -58,7 +59,7 @@ const Kids = () => {
  
 useEffect(() => {
   if (data) {
-    setSelectedKidProduct(
+    setkidProducts(
       Array.isArray(data.Kid) ? data.Kid : []
     );
   }
@@ -72,15 +73,15 @@ useEffect(() => {
   const { mutate: deleteProduct } = useMutationApi(
   "DELETE",
   API.kidsdelete,
-  ["kidsdelete"]
+  ["kids"]
 );
 
 const handleDelete = () => {
   deleteProduct({ id: selectedKidProduct._id });
             toastService.success("Kid deleted successfully");
-
+     setSelectedKidProduct(null);
       setShowDeleteModal(false);
-          setSelectedMenProduct(null);
+      
  };
 
   return (
@@ -127,7 +128,7 @@ const handleDelete = () => {
      <CommonTable
         columns={KidTablecolumns}
 
-        data={selectedKidProduct}
+        data={kidProducts}
         actions={(item) => (
 
           <div className="flex justify-end items-center gap-1 px-6 py-4">

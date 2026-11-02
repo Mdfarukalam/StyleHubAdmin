@@ -22,6 +22,7 @@ const Women = () => {
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [modalMode, setModalMode] = useState("add");
 const [selectedProduct, setSelectedProduct] = useState(null);
+const [womenProducts, setwomenProducts] = useState([]);
 
 const handleAdd = () => {
   setSelectedProduct(null);
@@ -56,7 +57,7 @@ const handleEdit = (product) => {
        ? data
        : data.GetWomenProducts || [];
  
-     setSelectedWomenProduct(
+     setwomenProducts(
        Array.isArray(userData) ? userData : []
      );
    }
@@ -136,7 +137,7 @@ const handleDelete = () => {
          <CommonTable
         columns={WomenTablecolumns}
 
-        data={selectedWomenProduct}
+        data={womenProducts}
         actions={(item) => (
 
           <div className="flex justify-end items-center gap-1 px-6 py-4">

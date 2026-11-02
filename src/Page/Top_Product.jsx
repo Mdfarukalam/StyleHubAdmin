@@ -38,6 +38,7 @@ const handleEdit = (product) => {
   setIsModalOpen(true);
 };
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+const [topProducts, settopProducts] = useState([]);
 
   const [selectedTopProduct, setSelectedTopProduct] = useState(null);
 
@@ -60,7 +61,7 @@ const handleEdit = (product) => {
       ? data
       : data.TopProduct || [];
 
-    setSelectedTopProduct(
+    settopProducts(
       Array.isArray(userData) ? userData : []
     );
   }
@@ -134,7 +135,7 @@ const handleDelete = () => {
         <CommonTable
         columns={Top_productTablecolumns}
 
-        data={selectedTopProduct}
+        data={topProducts}
         actions={(item) => (
 
           <div className="flex justify-end items-center gap-1 px-6 py-4">

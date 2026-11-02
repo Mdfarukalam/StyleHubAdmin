@@ -56,7 +56,7 @@ const User = () => {
         data.data ||
         [];
 
-      setSelectedUser(Array.isArray(userData) ? userData : []);
+      setUsers(Array.isArray(userData) ? userData : []);
     }
   }, [data]);
 
@@ -76,7 +76,7 @@ const User = () => {
   const { mutate: deleteProduct } = useMutationApi(
   "DELETE",
   API.DeletedUsers,
-  ["DeletedUsers"]
+  ["users"]
 );
 
 const handleDelete = () => {
@@ -124,7 +124,7 @@ const handleDelete = () => {
       <CommonTable
         columns={columns}
 
-        data={selectedUser}
+        data={users}
         actions={(item) => (
 
           <div className="flex justify-end items-center gap-1 px-6 py-4">

@@ -40,6 +40,7 @@ const handleEdit = (product) => {
   setIsModalOpen(true);
 };
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+const [arrivalsProducts, setarrivalsProducts] = useState([]);
 
   const [selectedarrivalsProduct, setSelectedArrivalsProduct] = useState(null);
 
@@ -60,7 +61,7 @@ const handleEdit = (product) => {
  
 useEffect(() => {
   if (data) {
-    setSelectedArrivalsProduct(
+    setarrivalsProducts(
       Array.isArray(data.GetArrivalsProduts) ? data.GetArrivalsProduts : []
     );
   }
@@ -140,7 +141,7 @@ const handleDelete = () => {
         <CommonTable
         columns={New_ArrivalsTablecolumns}
 
-        data={selectedarrivalsProduct}
+        data={arrivalsProducts}
         actions={(item) => (
 
           <div className="flex justify-end items-center gap-1 px-6 py-4">

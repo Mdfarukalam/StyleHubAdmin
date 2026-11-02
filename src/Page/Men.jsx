@@ -24,7 +24,7 @@ const Men = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [selectedMenProduct, setSelectedMenProduct] = useState(null);
-
+const [menProducts, setMenProducts] = useState([]);
 
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [modalMode, setModalMode] = useState("add");
@@ -61,7 +61,7 @@ const handleEdit = (product) => {
       ? data
       : data.GetMenProduts || [];
 
-    setSelectedMenProduct(
+    setMenProducts(
       Array.isArray(userData) ? userData : []
     );
   }
@@ -83,13 +83,19 @@ const handleEdit = (product) => {
   ["men"]
 );
 
-const handleDelete = () => {
-  deleteProduct({ id: selectedMenProduct._id });
-      toastService.success("Men deleted successfully");
+const handleDelete = async () => {
+  if (!selectedMenProduct?._id) return;
 
-      setShowDeleteModal(false);
+  try {
+    await deleteProduct({ id: selectedMenProduct._id });
+
+    toastService.success("Men deleted successfully");
+    setShowDeleteModal(false);
     setSelectedMenProduct(null);
- };
+  } catch (error) {
+    toastService.error("Delete failed");
+  }
+};
    
  
 
@@ -141,7 +147,7 @@ const handleDelete = () => {
    <CommonTable
         columns={MenTablecolumns}
 
-        data={selectedMenProduct}
+        data={menProducts}
         actions={(item) => 
         {
           console.log(item,"item")
