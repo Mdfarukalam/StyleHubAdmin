@@ -30,7 +30,10 @@ const initialData = Object.fromEntries(
 );
 
   const [formData, setFormData] = useState(initialData);
-
+const [colors, setColors] = useState([]);
+const [sizes, setSizes] = useState([]);
+const [colorInput, setColorInput] = useState("");
+const [sizeInput, setSizeInput] = useState("");
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -85,19 +88,23 @@ const handleSubmit = (e) => {
 
   const productData = {};
 
-  config.fields.forEach((field) => {
-    const value = formData[field.name];
+config.fields.forEach((field) => {
+  const value = formData[field.name];
 
-    if (field.type === "number") {
-      productData[field.name] = Number(value);
-    } else if (field.type === "array") {
-      productData[field.name] = value
-        ? value.split(",").map((item) => item.trim()).filter(Boolean)
-        : [];
-    } else {
-      productData[field.name] = value;
-    }
-  });
+  if (field.name === "colors") {
+    productData.colors = colors;
+  } else if (field.name === "sizes") {
+    productData.sizes = sizes;
+  } else if (field.type === "number") {
+    productData[field.name] = Number(value);
+  } else if (field.type === "array") {
+    productData[field.name] = value
+      ? value.split(",").map((item) => item.trim()).filter(Boolean)
+      : [];
+  } else {
+    productData[field.name] = value;
+  }
+});
 
   if (mode === "edit") {
   updateProduct(
@@ -105,6 +112,8 @@ const handleSubmit = (e) => {
     {
       onSuccess: () => {
         toastService.success(`${config.title} updated successfully`);
+              setFormData({});
+                     resetForm()
         onClose();
       },
       onError: (error) => toastService.error(error.message),
@@ -114,6 +123,8 @@ const handleSubmit = (e) => {
     addProduct(productData, {
       onSuccess: () => {
         toastService.success(`${config.title} added successfully`);
+              setFormData({});
+              resetForm()
    onClose();
       },
       onError: (error) => toastService.error(error.message),
@@ -200,13 +211,51 @@ useEffect(() => {
     });
 
     setFormData(editData);
+        // Edit mode: existing colors and sizes
+    setColors(product.colors || []);
+    setSizes(product.sizes || []);
+
   } else {
+        setColors([]);
+    setSizes([]);
+    setColorInput("");
+    setSizeInput("");
     setFormData(initialData);
   }
 }, [mode, product, category]);
 
 
-console.log(product,"productproduct")
+
+ 
+const resetForm = () => {
+  setFormData(initialData);
+  setImagePreview("");
+  setColors([]);
+  setSizes([]);
+  setColorInput("");
+  setSizeInput("");
+};
+ const addColor = () => {
+  if (colorInput.trim() && !colors.includes(colorInput.trim())) {
+    setColors([...colors, colorInput.trim()]);
+    setColorInput("");
+  }
+};
+
+const addSize = () => {
+  if (sizeInput.trim() && !sizes.includes(sizeInput.trim())) {
+    setSizes([...sizes, sizeInput.trim()]);
+    setSizeInput("");
+  }
+};
+
+const removeColor = (item) => {
+  setColors(colors.filter((color) => color !== item));
+};
+
+const removeSize = (item) => {
+  setSizes(sizes.filter((size) => size !== item));
+};
   const inputClass =
     "w-full border border-[#343a46] bg-[#1e222b] text-white p-3 rounded-lg outline-none focus:border-pink-500";
 
@@ -226,7 +275,12 @@ console.log(product,"productproduct")
 >
         <button
     type="button"
-    onClick={onClose}
+  onClick={() => {
+    setFormData({});
+    onClose();
+     setImagePreview(null);
+            resetForm()
+  }}
     className="float-right text-xl text-gray-400"
   >
     ✕
@@ -236,16 +290,104 @@ console.log(product,"productproduct")
     {mode === "edit" ? "Edit" : "Add"} {config.title}
   </h2>
 
-         <form onSubmit={handleSubmit}>
+ <form onSubmit={handleSubmit}>
   <div className="grid grid-cols-2 gap-4">
     {config.fields.map((field) => (
       <div
         key={field.name}
-        className={["textarea", "checkbox", "image"].includes(field.type)
-          ? "col-span-2"
-          : ""}
+        className={
+          ["textarea", "checkbox", "image", "colors", "sizes"].includes(
+            field.name === "colors" || field.name === "sizes"
+              ? field.name
+              : field.type
+          )
+            ? "col-span-2"
+            : ""
+        }
       >
-        {field.type === "image" ? (
+        {field.name === "colors" ? (
+          <div>
+            <label className="text-white block mb-2">{field.label}</label>
+
+            <div className="flex gap-2">
+              <input
+                value={colorInput}
+                onChange={(e) => setColorInput(e.target.value)}
+                placeholder="Enter color"
+                className={inputClass}
+              />
+
+              <button
+                type="button"
+                onClick={addColor}
+             disabled={!colorInput.trim()}
+  className="bg-pink-500 text-white px-5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
+
+              >
+                Add
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-2 mt-3">
+              {colors.map((color) => (
+                <span
+                  key={color}
+                  className="bg-[#343a46] text-white px-3 py-2 rounded-lg"
+                >
+                  {color}
+                  <button
+                    type="button"
+                    onClick={() => removeColor(color)}
+                    className="ml-3 text-red-400"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : field.name === "sizes" ? (
+          <div>
+            <label className="text-white block mb-2">{field.label}</label>
+
+            <div className="flex gap-2">
+              <input
+                value={sizeInput}
+                onChange={(e) => setSizeInput(e.target.value)}
+                placeholder="Enter size (S, M, L, XL)"
+                className={inputClass}
+              />
+
+              <button
+                type="button"
+                onClick={addSize}
+      disabled={!sizeInput.trim()}
+  className="bg-pink-500 text-white px-5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
+
+              >
+                Add
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-2 mt-3">
+              {sizes.map((size) => (
+                <span
+                  key={size}
+                  className="bg-[#343a46] text-white px-3 py-2 rounded-lg"
+                >
+                  {size}
+                  <button
+                    type="button"
+                    onClick={() => removeSize(size)}
+                    className="ml-3 text-red-400"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : field.type === "image" ? (
           <div>
             <label className="text-white block mb-2">
               {field.label}

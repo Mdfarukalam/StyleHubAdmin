@@ -5,7 +5,8 @@ export const productFields = {
             { name: "name", label: "Product Name", type: "text", required: true },
             { name: "brand", label: "Brand", type: "text", required: true },
             {
-                name: "category", label: "Category", type: "select",
+                name: "category", label: "Category", type: "select",defaultValue: "T-Shirts",
+
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
               // Image Upload
@@ -21,7 +22,7 @@ export const productFields = {
             { name: "description", label: "Description", type: "textarea" },
           
             { name: "colors", label: "Colors (Black, White)", type: "text" },
-            { name: "sizes", label: "Sizes (S, M, L)", type: "text" },
+            { name: "sizes", label: "Sizes No (S, M, L)", type: "text" },
             { name: "stock", label: "Stock", type: "number" },
             { name: "rating", label: "Rating", type: "number" },
             { name: "isActive", label: "Active Product", type: "checkbox" },
@@ -38,7 +39,8 @@ export const productFields = {
             { name: "name", label: "Product Name", type: "text", required: true },
             { name: "brand", label: "Brand", type: "text", required: true },
             {
-                name: "category", label: "Category", type: "select",
+                name: "category", label: "Category", type: "select",defaultValue: "T-Shirts",
+
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
               // Image Upload
@@ -68,7 +70,8 @@ export const productFields = {
             { name: "name", label: "Product Name", type: "text", required: true },
             { name: "brand", label: "Brand", type: "text", required: true },
             {
-                name: "category", label: "Category", type: "select",
+                name: "category", label: "Category", type: "select",defaultValue: "T-Shirts",
+
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
               // Image Upload
@@ -100,7 +103,8 @@ export const productFields = {
             { name: "name", label: "Product Name", type: "text", required: true },
             { name: "brand", label: "Brand", type: "text", required: true },
             {
-                name: "category", label: "Category", type: "select",
+                name: "category", label: "Category", type: "select",defaultValue: "T-Shirts",
+
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
 
@@ -131,7 +135,8 @@ export const productFields = {
             { name: "name", label: "Product Name", type: "text", required: true },
             { name: "brand", label: "Brand", type: "text", required: true },
             {
-                name: "category", label: "Category", type: "select",
+                name: "category", label: "Category", type: "select",defaultValue: "T-Shirts",
+
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
 
