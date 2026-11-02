@@ -8,11 +8,18 @@ export const productFields = {
                 name: "category", label: "Category", type: "select",
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
+              // Image Upload
+      {
+        name: "images",
+        label: "Upload Product Image",
+        type: "image",
+        required: true,
+      },
             { name: "price", label: "Selling Price", type: "number", required: true },
             { name: "originalPrice", label: "Original Price", type: "number", required: true },
             { name: "discount", label: "Discount", type: "number", required: true },
             { name: "description", label: "Description", type: "textarea" },
-            { name: "images", label: "Image URL", type: "text", required: true },
+          
             { name: "colors", label: "Colors (Black, White)", type: "text" },
             { name: "sizes", label: "Sizes (S, M, L)", type: "text" },
             { name: "stock", label: "Stock", type: "number" },
@@ -34,11 +41,18 @@ export const productFields = {
                 name: "category", label: "Category", type: "select",
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
+              // Image Upload
+      {
+        name: "images",
+        label: "Upload Product Image",
+        type: "image",
+        required: true,
+      },
             { name: "price", label: "Selling Price", type: "number", required: true },
             { name: "originalPrice", label: "Original Price", type: "number", required: true },
             { name: "discount", label: "Discount", type: "number", required: true },
             { name: "description", label: "Description", type: "textarea" },
-            { name: "images", label: "Image URL", type: "text", required: true },
+          
             { name: "colors", label: "Colors (Black, White)", type: "text" },
             { name: "sizes", label: "Sizes (S, M, L)", type: "text" },
             { name: "stock", label: "Stock", type: "number" },
@@ -57,11 +71,18 @@ export const productFields = {
                 name: "category", label: "Category", type: "select",
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
+              // Image Upload
+      {
+        name: "images",
+        label: "Upload Product Image",
+        type: "image",
+        required: true,
+      },
             { name: "price", label: "Selling Price", type: "number", required: true },
             { name: "originalPrice", label: "Original Price", type: "number", required: true },
             { name: "discount", label: "Discount", type: "number", required: true },
             { name: "description", label: "Description", type: "textarea" },
-            { name: "images", label: "Image URL", type: "text", required: true },
+          
             { name: "colors", label: "Colors (Black, White)", type: "text" },
             { name: "sizes", label: "Sizes (S, M, L)", type: "text" },
             { name: "stock", label: "Stock", type: "number" },
@@ -82,11 +103,19 @@ export const productFields = {
                 name: "category", label: "Category", type: "select",
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
+
+              // Image Upload
+      {
+        name: "images",
+        label: "Upload Product Image",
+        type: "image",
+        required: true,
+      },
             { name: "price", label: "Selling Price", type: "number", required: true },
             { name: "originalPrice", label: "Original Price", type: "number", required: true },
             { name: "discount", label: "Discount", type: "number", required: true },
             { name: "description", label: "Description", type: "textarea" },
-            { name: "images", label: "Image URL", type: "text", required: true },
+          
             { name: "colors", label: "Colors (Black, White)", type: "text" },
             { name: "sizes", label: "Sizes (S, M, L)", type: "text" },
             { name: "stock", label: "Stock", type: "number" },
@@ -105,11 +134,19 @@ export const productFields = {
                 name: "category", label: "Category", type: "select",
                 options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
             },
+
+              // Image Upload
+      {
+        name: "images",
+        label: "Upload Product Image",
+        type: "image",
+        required: true,
+      },
             { name: "price", label: "Selling Price", type: "number", required: true },
             { name: "originalPrice", label: "Original Price", type: "number", required: true },
             { name: "discount", label: "Discount", type: "number", required: true },
             { name: "description", label: "Description", type: "textarea" },
-            { name: "images", label: "Image URL", type: "text", required: true },
+          
             { name: "colors", label: "Colors (Black, White)", type: "text" },
             { name: "sizes", label: "Sizes (S, M, L)", type: "text" },
             { name: "stock", label: "Stock", type: "number" },
