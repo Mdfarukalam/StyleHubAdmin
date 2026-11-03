@@ -12,6 +12,8 @@ const createEmptyVariant = () => ({
   color: "",
   images: "",
   sizes: [],
+  price: "",
+  originalPrice: "",
 });
 
 function AddModal({
@@ -50,7 +52,6 @@ function AddModal({
   ]);
 
   const [sizeInputs, setSizeInputs] = useState({});
-
   const [isUploading, setIsUploading] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState(null);
 
@@ -144,6 +145,26 @@ function AddModal({
           ? { ...variant, [field]: value }
           : variant
       )
+    );
+  };
+
+  // Calculate discount automatically
+  const calculateDiscount = (price, originalPrice) => {
+    const sellingPrice = Number(price);
+    const oldPrice = Number(originalPrice);
+
+    if (
+      !oldPrice ||
+      oldPrice <= 0 ||
+      price === "" ||
+      originalPrice === "" ||
+      sellingPrice > oldPrice
+    ) {
+      return 0;
+    }
+
+    return Math.round(
+      ((oldPrice - sellingPrice) / oldPrice) * 100
     );
   };
 
@@ -293,6 +314,8 @@ function AddModal({
               color: variant.color || "",
               images: variant.images || "",
               sizes: variant.sizes || [],
+              price: variant.price ?? "",
+              originalPrice: variant.originalPrice ?? "",
             }))
           : [createEmptyVariant()]
       );
@@ -321,15 +344,26 @@ function AddModal({
     }
 
     const incompleteVariant = colorVariants.find(
-      (variant) =>
-        !variant.color.trim() ||
-        !variant.images ||
-        !variant.sizes.length
+      (variant) => {
+        const price = Number(variant.price);
+        const originalPrice = Number(variant.originalPrice);
+
+        return (
+          !variant.color.trim() ||
+          !variant.images ||
+          !variant.sizes.length ||
+          variant.price === "" ||
+          variant.originalPrice === "" ||
+          price < 0 ||
+          originalPrice <= 0 ||
+          price > originalPrice
+        );
+      }
     );
 
     if (incompleteVariant) {
       toastService.error(
-        "Please add color, image and at least one size for every variant"
+        "Please add color, image, sizes and valid price details for every variant. Selling price cannot exceed original price."
       );
       return;
     }
@@ -344,17 +378,28 @@ function AddModal({
       return;
     }
 
-    // Create payload
+    // Create product payload
     const productData = {};
 
     fields.forEach((field) => {
       if (field.type === "colorVariants") {
         productData.colorVariants = colorVariants.map(
-          (variant) => ({
-            color: variant.color.trim(),
-            images: variant.images,
-            sizes: variant.sizes,
-          })
+          (variant) => {
+            const price = Number(variant.price);
+            const originalPrice = Number(variant.originalPrice);
+
+            return {
+              color: variant.color.trim(),
+              images: variant.images,
+              sizes: variant.sizes,
+              price,
+              originalPrice,
+              discount: calculateDiscount(
+                price,
+                originalPrice
+              ),
+            };
+          }
         );
 
         return;
@@ -446,7 +491,6 @@ function AddModal({
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-4">
-
           {fields.map((field) => (
             <div
               key={field.name}
@@ -463,7 +507,6 @@ function AddModal({
               {/* Color Variants */}
               {field.type === "colorVariants" ? (
                 <div className="col-span-2">
-
                   <div className="flex justify-between items-center mb-4">
                     <label className="text-white font-semibold">
                       {field.label}
@@ -479,147 +522,210 @@ function AddModal({
                   </div>
 
                   <div className="space-y-5">
-                    {colorVariants.map((variant, index) => (
-                      <div
-                        key={index}
-                        className="border border-[#343a46] bg-[#1e222b] rounded-lg p-4"
-                      >
-                        <div className="flex justify-between items-center mb-4">
-                          <h3 className="text-white font-semibold">
-                            Variant {index + 1}
-                          </h3>
+                    {colorVariants.map((variant, index) => {
+                      const discount = calculateDiscount(
+                        variant.price,
+                        variant.originalPrice
+                      );
 
-                          {colorVariants.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => removeVariant(index)}
-                              className="text-red-400 hover:text-red-300"
-                            >
-                              Remove ✕
-                            </button>
-                          )}
-                        </div>
+                      return (
+                        <div
+                          key={index}
+                          className="border border-[#343a46] bg-[#1e222b] rounded-lg p-4"
+                        >
+                          <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-white font-semibold">
+                              Variant {index + 1}
+                            </h3>
 
-                        {/* Color */}
-                        <label className="text-white block mb-2">
-                          Color
-                        </label>
-
-                        <input
-                          type="text"
-                          value={variant.color}
-                          onChange={(e) =>
-                            handleVariantChange(
-                              index,
-                              "color",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Enter color (Black, Blue...)"
-                          className={inputClass}
-                          required
-                        />
-
-                        {/* Single Image */}
-                        <label className="text-white block mt-4 mb-2">
-                          Upload Image
-                        </label>
-
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) =>
-                            handleImageUpload(e, index)
-                          }
-                          className={inputClass}
-                          disabled={isUploading}
-                        />
-
-                        {isUploading && uploadingIndex === index && (
-                          <p className="text-pink-400 text-sm mt-2">
-                            Uploading image...
-                          </p>
-                        )}
-
-                        {variant.images && (
-                          <div className="relative mt-3 w-24">
-                            <img
-                              src={variant.images}
-                              alt={variant.color || "Product"}
-                              className="w-24 h-24 object-cover rounded-lg border border-gray-600"
-                            />
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleVariantChange(
-                                  index,
-                                  "images",
-                                  ""
-                                )
-                              }
-                              className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full"
-                            >
-                              ✕
-                            </button>
+                            {colorVariants.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removeVariant(index)}
+                                className="text-red-400 hover:text-red-300"
+                              >
+                                Remove ✕
+                              </button>
+                            )}
                           </div>
-                        )}
 
-                        {/* Multiple Sizes */}
-                        <label className="text-white block mt-4 mb-2">
-                          Sizes
-                        </label>
+                          {/* Color */}
+                          <label className="text-white block mb-2">
+                            Color
+                          </label>
 
-                        <div className="flex gap-2">
                           <input
                             type="text"
-                            value={sizeInputs[index] || ""}
+                            value={variant.color}
                             onChange={(e) =>
-                              setSizeInputs((prev) => ({
-                                ...prev,
-                                [index]: e.target.value,
-                              }))
+                              handleVariantChange(
+                                index,
+                                "color",
+                                e.target.value
+                              )
                             }
-                            placeholder="Enter size (S, M, L, XL)"
+                            placeholder="Enter color (Black, Blue...)"
                             className={inputClass}
+                            required
                           />
 
-                          <button
-                            type="button"
-                            onClick={() => addSize(index)}
-                            disabled={!(sizeInputs[index] || "").trim()}
-                            className="bg-pink-500 text-white px-4 rounded-lg whitespace-nowrap disabled:opacity-50"
-                          >
-                            + Add Size
-                          </button>
-                        </div>
+                          {/* Image */}
+                          <label className="text-white block mt-4 mb-2">
+                            Upload Image
+                          </label>
 
-                        <div className="flex flex-wrap gap-2 mt-3">
-                          {variant.sizes.map((size) => (
-                            <span
-                              key={size}
-                              className="bg-[#343a46] text-white px-3 py-2 rounded-lg"
-                            >
-                              {size}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) =>
+                              handleImageUpload(e, index)
+                            }
+                            className={inputClass}
+                            disabled={isUploading}
+                          />
+
+                          {isUploading && uploadingIndex === index && (
+                            <p className="text-pink-400 text-sm mt-2">
+                              Uploading image...
+                            </p>
+                          )}
+
+                          {variant.images && (
+                            <div className="relative mt-3 w-24">
+                              <img
+                                src={variant.images}
+                                alt={variant.color || "Product"}
+                                className="w-24 h-24 object-cover rounded-lg border border-gray-600"
+                              />
 
                               <button
                                 type="button"
                                 onClick={() =>
-                                  removeSize(index, size)
+                                  handleVariantChange(
+                                    index,
+                                    "images",
+                                    ""
+                                  )
                                 }
-                                className="ml-3 text-red-400"
+                                className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full"
                               >
                                 ✕
                               </button>
-                            </span>
-                          ))}
-                        </div>
+                            </div>
+                          )}
 
-                      </div>
-                    ))}
+                          {/* Price Details */}
+                          <div className="grid grid-cols-2 gap-4 mt-4">
+                            <div>
+                              <label className="text-white block mb-2">
+                                Selling Price (₹)
+                              </label>
+
+                              <input
+                                type="number"
+                                min="0"
+                                value={variant.price}
+                                onChange={(e) =>
+                                  handleVariantChange(
+                                    index,
+                                    "price",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="Enter selling price"
+                                className={inputClass}
+                                required
+                              />
+                            </div>
+
+                            <div>
+                              <label className="text-white block mb-2">
+                                Original Price (₹)
+                              </label>
+
+                              <input
+                                type="number"
+                                min="1"
+                                value={variant.originalPrice}
+                                onChange={(e) =>
+                                  handleVariantChange(
+                                    index,
+                                    "originalPrice",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="Enter original price"
+                                className={inputClass}
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          {/* Automatic Discount */}
+                          <div className="mt-3 bg-[#252b36] border border-[#343a46] rounded-lg p-3">
+                            <p className="text-gray-300 text-sm">
+                              Automatic Discount
+                            </p>
+
+                            <p className="text-pink-400 font-bold text-lg">
+                              {discount}% OFF
+                            </p>
+                          </div>
+
+                          {/* Sizes */}
+                          <label className="text-white block mt-4 mb-2">
+                            Sizes
+                          </label>
+
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={sizeInputs[index] || ""}
+                              onChange={(e) =>
+                                setSizeInputs((prev) => ({
+                                  ...prev,
+                                  [index]: e.target.value,
+                                }))
+                              }
+                              placeholder="Enter size (S, M, L, XL)"
+                              className={inputClass}
+                            />
+
+                            <button
+                              type="button"
+                              onClick={() => addSize(index)}
+                              disabled={!(sizeInputs[index] || "").trim()}
+                              className="bg-pink-500 text-white px-4 rounded-lg whitespace-nowrap disabled:opacity-50"
+                            >
+                              + Add Size
+                            </button>
+                          </div>
+
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {variant.sizes.map((size) => (
+                              <span
+                                key={size}
+                                className="bg-[#343a46] text-white px-3 py-2 rounded-lg"
+                              >
+                                {size}
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    removeSize(index, size)
+                                  }
+                                  className="ml-3 text-red-400"
+                                >
+                                  ✕
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-
               ) : field.type === "select" ? (
                 <>
                   <label className="text-white block mb-2">
@@ -639,7 +745,6 @@ function AddModal({
                     ))}
                   </select>
                 </>
-
               ) : field.type === "textarea" ? (
                 <>
                   <label className="text-white block mb-2">
@@ -655,7 +760,6 @@ function AddModal({
                     required={field.required}
                   />
                 </>
-
               ) : field.type === "checkbox" ? (
                 <label className="flex items-center gap-3 text-white">
                   <input
@@ -666,7 +770,6 @@ function AddModal({
                   />
                   {field.label}
                 </label>
-
               ) : (
                 <>
                   <label className="text-white block mb-2">
@@ -686,7 +789,6 @@ function AddModal({
               )}
             </div>
           ))}
-
         </div>
 
         <button
