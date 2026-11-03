@@ -1,6 +1,30 @@
+
 import React from "react";
 
 const Dashboard = () => {
+  const videos = [
+    {
+      title: "Women Saree Collection",
+      description: "Latest saree collection",
+      video: "/Women_wearing_saree_collection_5db219dc.mp4",
+    },
+    {
+      title: "Men Jeans Collection",
+      description: "Latest jeans collection",
+      video: "/Men_jeans_video_56a0a708.mp4",
+    },
+    {
+      title: "Kids Collection",
+      description: "Latest kids products",
+      video: "/Kids_video_products_collection_421eb489.mp4",
+    },
+    {
+      title: "Featured Products",
+      description: "Men, Women & Kids",
+       video: "/Women_wearing_saree_collection_5db219dc.mp4",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-[#0f1117] text-white p-6 lg:p-8">
 
@@ -18,100 +42,39 @@ const Dashboard = () => {
       {/* VIDEO SECTION */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
 
-        {/* WOMEN */}
-        <div className="bg-[#181b24] border border-[#272b36] rounded-xl shadow-lg overflow-hidden">
-          <div className="h-56 bg-[#222631] flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-5xl mb-2 text-pink-500">▶</div>
+        {videos.map((item, index) => (
+          <div
+            key={index}
+            className="bg-[#181b24] border border-[#272b36] rounded-xl shadow-lg overflow-hidden"
+          >
+            {/* VIDEO */}
+            <div className="w-full h-72 bg-black flex items-center justify-center">
+              <video
+                className="w-full h-full object-contain"
+                src={item.video}
+                controls
+                muted
+                loop
+                playsInline
+              >
+                Your browser does not support video.
+              </video>
+            </div>
 
-              <p className="font-semibold text-gray-200">
-                WOMEN SAREE VIDEO
+            {/* DETAILS */}
+            <div className="p-4">
+              <h2 className="font-semibold text-lg text-white">
+                {item.title}
+              </h2>
+
+              <p className="text-sm text-gray-400 mt-1">
+                {item.description}
               </p>
             </div>
           </div>
-
-          <div className="p-4">
-            <h2 className="font-semibold text-lg text-white">
-              Women Saree Collection
-            </h2>
-
-            <p className="text-sm text-gray-400 mt-1">
-              Latest saree collection
-            </p>
-          </div>
-        </div>
-
-        {/* MEN */}
-        <div className="bg-[#181b24] border border-[#272b36] rounded-xl shadow-lg overflow-hidden">
-          <div className="h-56 bg-[#222631] flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-5xl mb-2 text-pink-500">▶</div>
-
-              <p className="font-semibold text-gray-200">
-                MEN JEANS VIDEO
-              </p>
-            </div>
-          </div>
-
-          <div className="p-4">
-            <h2 className="font-semibold text-lg text-white">
-              Men Jeans Collection
-            </h2>
-
-            <p className="text-sm text-gray-400 mt-1">
-              Latest jeans collection
-            </p>
-          </div>
-        </div>
-
-        {/* KIDS */}
-        <div className="bg-[#181b24] border border-[#272b36] rounded-xl shadow-lg overflow-hidden">
-          <div className="h-56 bg-[#222631] flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-5xl mb-2 text-pink-500">▶</div>
-
-              <p className="font-semibold text-gray-200">
-                KIDS VIDEO
-              </p>
-            </div>
-          </div>
-
-          <div className="p-4">
-            <h2 className="font-semibold text-lg text-white">
-              Kids Collection
-            </h2>
-
-            <p className="text-sm text-gray-400 mt-1">
-              Latest kids products
-            </p>
-          </div>
-        </div>
-
-        {/* MIX */}
-        <div className="bg-[#181b24] border border-[#272b36] rounded-xl shadow-lg overflow-hidden">
-          <div className="h-56 bg-[#222631] flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-5xl mb-2 text-pink-500">▶</div>
-
-              <p className="font-semibold text-gray-200">
-                3 MIX PRODUCTS
-              </p>
-            </div>
-          </div>
-
-          <div className="p-4">
-            <h2 className="font-semibold text-lg text-white">
-              Featured Products
-            </h2>
-
-            <p className="text-sm text-gray-400 mt-1">
-              Men, Women & Kids
-            </p>
-          </div>
-        </div>
+        ))}
 
       </div>
-
     </div>
   );
 };
