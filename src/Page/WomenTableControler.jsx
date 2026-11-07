@@ -4,6 +4,7 @@
   key: "name",
  render: (user) => {
   const productImage = user.colorVariants?.[0]?.images;
+  const productname = user.colorVariants?.[0]?.name;
 
   return (
     <div className="flex items-center gap-3">
@@ -31,7 +32,7 @@
 
       <div>
         <p className="text-sm font-medium text-gray-200">
-          {user.name || "Unknown Product"}
+          {productname|| "Unknown Product"}
         </p>
 
         <p className="text-xs text-gray-500 mt-0.5">

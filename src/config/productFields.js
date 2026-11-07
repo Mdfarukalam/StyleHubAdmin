@@ -2,11 +2,37 @@ export const productFields = {
     men: {
         title: "Men Product",
         fields: [
-            { name: "name", label: "Product Name", type: "text", required: true },
+
+
             { name: "brand", label: "Brand", type: "text", required: true },
             {
                 name: "category", label: "Category", type: "select", defaultValue: "T-Shirts",
-                options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
+                options: [
+                    "T-Shirts",
+                    "Shirts",
+                    "Jeans",
+                    "Shorts",
+                    "Trousers",
+                    "Jackets",
+                    "Hoodies",
+                    "Sweatshirts",
+                    "Sweaters",
+                    "Dresses",
+                    "Frocks",
+                    "Kurtis",
+                    "Tops",
+                    "Leggings",
+                    "Skirts",
+                    "Co-Ord Sets",
+                    "Ethnic Wear",
+                    "Party Wear",
+                    "Nightwear",
+                    "Track Pants",
+                    "Tracksuits",
+                    "Rompers",
+                    "Jumpsuits",
+                    "School Uniform"
+                ],
             },
             { name: "description", label: "Description", type: "textarea" },
 
@@ -25,15 +51,37 @@ export const productFields = {
 
 
     women: {
-        title: "Women Product", 
+        title: "Women Product",
 
         fields: [
-            { name: "name", label: "Product Name", type: "text", required: true },
+
+
             { name: "brand", label: "Brand", type: "text", required: true },
             {
                 name: "category", label: "Category", type: "select", defaultValue: "T-Shirts",
 
-                options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
+                options: [
+                    "T-Shirts",
+                    "Jeans",
+                    "Shirts",
+                    "Jackets",
+                    "Kurtis",
+                    "Tops",
+                    "Sarees",
+                    "Dresses",
+                    "Skirts",
+                    "Leggings",
+                    "Palazzos",
+                    "Ethnic Wear",
+                    "Western Wear",
+                    "Suits",
+                    "Lehenga",
+                    "Dupatta",
+                    "Shorts",
+                    "Co-Ord Sets",
+                    "Sweaters",
+                    "Sweatshirts"
+                ],
             },
             // Image Upload
 
@@ -51,15 +99,41 @@ export const productFields = {
     },
 
     kids: {
-        title: "kids Product", 
+        title: "kids Product",
 
         fields: [
-            { name: "name", label: "Product Name", type: "text", required: true },
+
+
             { name: "brand", label: "Brand", type: "text", required: true },
             {
                 name: "category", label: "Category", type: "select", defaultValue: "T-Shirts",
 
-                options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
+                options: [
+                    "T-Shirts",
+                    "Shirts",
+                    "Jeans",
+                    "Shorts",
+                    "Trousers",
+                    "Jackets",
+                    "Hoodies",
+                    "Sweatshirts",
+                    "Sweaters",
+                    "Dresses",
+                    "Frocks",
+                    "Kurtis",
+                    "Tops",
+                    "Leggings",
+                    "Skirts",
+                    "Co-Ord Sets",
+                    "Ethnic Wear",
+                    "Party Wear",
+                    "Nightwear",
+                    "Track Pants",
+                    "Tracksuits",
+                    "Rompers",
+                    "Jumpsuits",
+                    "School Uniform"
+                ],
             },
             // Image Upload
 
@@ -82,12 +156,28 @@ export const productFields = {
         title: "Top Product",
 
         fields: [
-            { name: "name", label: "Product Name", type: "text", required: true },
+
+
             { name: "brand", label: "Brand", type: "text", required: true },
             {
                 name: "category", label: "Category", type: "select", defaultValue: "T-Shirts",
 
-                options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
+                options: [
+                    "T-Shirts",
+                    "Shirts",
+                    "Jeans",
+                    "Jackets",
+                    "Kurtis",
+                    "Tops",
+                    "Sarees",
+                    "Dresses",
+                    "Skirts",
+                    "Lehengas",
+                    "Kids Wear",
+                    "Shoes",
+                    "Accessories",
+                    "Other"
+                ],
             },
 
             // Image Upload
@@ -107,15 +197,38 @@ export const productFields = {
     },
 
     arrivals: {
-        title: "New Arrivals Product",  
+        title: "New Arrivals Product",
 
         fields: [
-            { name: "name", label: "Product Name", type: "text", required: true },
+
+
             { name: "brand", label: "Brand", type: "text", required: true },
             {
                 name: "category", label: "Category", type: "select", defaultValue: "T-Shirts",
 
-                options: ["T-Shirts", "Jeans", "Shirts", "Jackets"],
+                options: [
+                    "T-Shirts",
+                    "Shirts",
+                    "Jeans",
+                    "Jackets",
+                    "Hoodies",
+                    "Sweatshirts",
+                    "Sweaters",
+                    "Trousers",
+                    "Shorts",
+                    "Kurtis",
+                    "Tops",
+                    "Sarees",
+                    "Dresses",
+                    "Skirts",
+                    "Lehengas",
+                    "Ethnic Wear",
+                    "Western Wear",
+                    "Kids Wear",
+                    "Shoes",
+                    "Accessories",
+                    "Other"
+                ],
             },
 
             // Image Upload

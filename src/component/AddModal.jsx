@@ -10,6 +10,7 @@ Modal.setAppElement("#root");
 
 const createEmptyVariant = () => ({
   color: "",
+    name: "",
   images: "",
   sizes: [],
   price: "",
@@ -312,6 +313,7 @@ function AddModal({
         product.colorVariants?.length
           ? product.colorVariants.map((variant) => ({
               color: variant.color || "",
+                name: variant.name || "",
               images: variant.images || "",
               sizes: variant.sizes || [],
               price: variant.price ?? "",
@@ -350,6 +352,7 @@ function AddModal({
 
         return (
           !variant.color.trim() ||
+           !variant.name.trim() ||
           !variant.images ||
           !variant.sizes.length ||
           variant.price === "" ||
@@ -390,6 +393,7 @@ function AddModal({
 
             return {
               color: variant.color.trim(),
+                name: variant.name.trim(),
               images: variant.images,
               sizes: variant.sizes,
               price,
@@ -548,6 +552,23 @@ function AddModal({
                               </button>
                             )}
                           </div>
+
+
+                          {/* Name */}
+<label className="text-white block mt-4 mb-2">
+   Product Name
+</label>
+
+<input
+  type="text"
+  value={variant.name}
+  onChange={(e) =>
+    handleVariantChange(index, "name", e.target.value)
+  }
+  placeholder="Enter variant name"
+  className={inputClass}
+  required
+/>
 
                           {/* Color */}
                           <label className="text-white block mb-2">
