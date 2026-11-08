@@ -43,6 +43,11 @@ export const API = {
   },
 
   DeletedUsers:"/api/admin/DeletedUsers",
+
+
+  Orderall_products:"/api/admin/Orderall_products",
+  updateOrderStatuss:"/api/admin/updateOrderStatuss",
+  ContactUsUsers:"/api/admin/ContactUsUsers",
 };
 
 export default API;

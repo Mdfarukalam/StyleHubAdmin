@@ -58,6 +58,10 @@ export const POST = (endpoint, payload) =>
 export const GET = (endpoint) =>
   request(endpoint, "GET");
 
+
+
+
+
 // PUT
 export const PUT = (endpoint, payload = {}) => {
   const { id, ...body } = payload;

@@ -8,6 +8,7 @@ const useMutationApi = (method, endpoint, queryKey = null) => {
     POST,
     PUT,
     DELETE,
+    
   };
 
   return useMutation({

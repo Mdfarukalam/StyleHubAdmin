@@ -28,6 +28,8 @@ const handleLogout = () => {
     { path: "/kids", icon: "🧒", name: "Kids" },
     { path: "/top-product", icon: "🔥", name: "Top Product" },
     { path: "/new-arrivals", icon: "🆕", name: "New Arrivals" },
+  { path: "/Orders", icon: "📦", name: "Orders" },
+  { path: "/ContactUsUser", icon: "📩", name: "Contact Us" },
   ];
 
   return (

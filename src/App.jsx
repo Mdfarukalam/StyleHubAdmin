@@ -17,6 +17,8 @@ import New_Arrivals from "./Page/New_Arrivals";
 import Login from "./component/Login";
 import ProtectedRoute from "./component/ProtectedRoute";
 import GlobalLoader from "./component/GlobalLoader";
+import Orders from "./Page/Order";
+import ContactUsUser from "./Page/ContactUsUser";
 
 function App() {
   return (
@@ -39,7 +41,10 @@ function App() {
             <Route path="kids" element={<Kids />} />
             <Route path="top-product" element={<Top_Product />} />
             <Route path="new-arrivals" element={<New_Arrivals />} />
-
+         <Route path="Orders" element={<Orders />} />
+                  <Route path="ContactUsUser" element={<ContactUsUser />} />
+             
+ 
           </Route>
         </Route>
 
