@@ -247,4 +247,16 @@ export const productFields = {
         ],
     },
 
+
+    Addimage: {
+        title: "Image Product",
+
+        fields: [
+                        { name: "images", label: "images", type: "text", required: true },
+
+        ]
+    }
+
+     
+
 };

@@ -10,7 +10,7 @@ Modal.setAppElement("#root");
 
 const createEmptyVariant = () => ({
   color: "",
-    name: "",
+  name: "",
   images: "",
   sizes: [],
   price: "",
@@ -56,6 +56,10 @@ function AddModal({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState(null);
 
+  // Latest Image state
+  const [latestImage, setLatestImage] = useState("");
+  const [isLatestUploading, setIsLatestUploading] = useState(false);
+
   // API endpoints
   const productEndpoints = {
     men: {
@@ -77,6 +81,10 @@ function AddModal({
     topProducts: {
       add: API.topProducts.add,
       update: API.topProducts.edit,
+    },
+    Addimage: {
+      add: API.Addimage.AddLatestImage,
+      update: API.Addimage.EditeLatestImage,
     },
   };
 
@@ -217,53 +225,56 @@ function AddModal({
     );
   };
 
-  // Upload single image for each color
+  // Common image upload function
+  const uploadImage = async (file) => {
+    if (!file.type.startsWith("image/")) {
+      throw new Error("Please select a valid image");
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error("Image must be less than 5 MB");
+    }
+
+    const uploadData = new FormData();
+    uploadData.append("image", file);
+
+    const response = await fetch(
+      "https://stylehub-backend-3-pgrs.onrender.com/api/admin/upload",
+      {
+        method: "POST",
+        body: uploadData,
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Image upload failed");
+    }
+
+    if (!data.imageUrl) {
+      throw new Error("Image URL not received");
+    }
+
+    return data.imageUrl;
+  };
+
+  // Upload product variant image
   const handleImageUpload = async (e, variantIndex) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      toastService.error("Please select a valid image");
-      e.target.value = "";
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toastService.error("Image must be less than 5 MB");
-      e.target.value = "";
-      return;
-    }
-
     try {
       setIsUploading(true);
       setUploadingIndex(variantIndex);
 
-      const uploadData = new FormData();
-      uploadData.append("image", file);
-
-      const response = await fetch(
-        "https://stylehub-backend-3-pgrs.onrender.com/api/admin/upload",
-        {
-          method: "POST",
-          body: uploadData,
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Image upload failed");
-      }
-
-      if (!data.imageUrl) {
-        throw new Error("Image URL not received");
-      }
+      const imageUrl = await uploadImage(file);
 
       handleVariantChange(
         variantIndex,
         "images",
-        data.imageUrl
+        imageUrl
       );
 
       toastService.success("Image uploaded successfully");
@@ -276,18 +287,47 @@ function AddModal({
     }
   };
 
+  // Upload Latest Image
+  const handleLatestImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    try {
+      setIsLatestUploading(true);
+
+      const imageUrl = await uploadImage(file);
+
+      setLatestImage(imageUrl);
+
+      toastService.success("Image uploaded successfully");
+    } catch (error) {
+      toastService.error(error.message);
+    } finally {
+      setIsLatestUploading(false);
+      e.target.value = "";
+    }
+  };
+
   // Reset form
   const resetForm = () => {
     setFormData(initialData);
     setColorVariants([createEmptyVariant()]);
     setSizeInputs({});
+    setLatestImage("");
   };
 
-  // Edit mode
+  // Edit mode and Add mode initialization
   useEffect(() => {
     if (!isOpen) return;
 
     if (mode === "edit" && product) {
+      // Latest Image edit
+      if (category === "Addimage") {
+        setLatestImage(product.images || "");
+        return;
+      }
+
       const editData = { ...initialData };
 
       fields.forEach((field) => {
@@ -313,7 +353,7 @@ function AddModal({
         product.colorVariants?.length
           ? product.colorVariants.map((variant) => ({
               color: variant.color || "",
-                name: variant.name || "",
+              name: variant.name || "",
               images: variant.images || "",
               sizes: variant.sizes || [],
               price: variant.price ?? "",
@@ -324,9 +364,7 @@ function AddModal({
 
       setSizeInputs({});
     } else {
-      setFormData(initialData);
-      setColorVariants([createEmptyVariant()]);
-      setSizeInputs({});
+      resetForm();
     }
   }, [isOpen, mode, product, category]);
 
@@ -334,12 +372,67 @@ function AddModal({
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Latest Image API handling
+    if (category === "Addimage") {
+      if (isLatestUploading) {
+        toastService.error("Please wait for image upload to finish");
+        return;
+      }
+
+      if (!latestImage) {
+        toastService.error("Please upload an image");
+        return;
+      }
+
+      const imageData = {
+        images: latestImage,
+      };
+
+      if (mode === "edit") {
+        updateProduct(
+          {
+            ...imageData,
+            id: product._id,
+          },
+          {
+            onSuccess: () => {
+              toastService.success(
+                "Latest image updated successfully"
+              );
+
+              resetForm();
+              onClose();
+            },
+            onError: (error) => {
+              toastService.error(error.message);
+            },
+          }
+        );
+      } else {
+        addProduct(imageData, {
+          onSuccess: () => {
+            toastService.success(
+              "Latest image added successfully"
+            );
+
+            resetForm();
+            onClose();
+          },
+          onError: (error) => {
+            toastService.error(error.message);
+          },
+        });
+      }
+
+      return;
+    }
+
+    // Product upload validation
     if (isUploading) {
       toastService.error("Please wait for image upload to finish");
       return;
     }
 
-    // Validate variants
     if (!colorVariants.length) {
       toastService.error("Please add at least one color");
       return;
@@ -352,7 +445,7 @@ function AddModal({
 
         return (
           !variant.color.trim() ||
-           !variant.name.trim() ||
+          !variant.name.trim() ||
           !variant.images ||
           !variant.sizes.length ||
           variant.price === "" ||
@@ -393,7 +486,7 @@ function AddModal({
 
             return {
               color: variant.color.trim(),
-                name: variant.name.trim(),
+              name: variant.name.trim(),
               images: variant.images,
               sizes: variant.sizes,
               price,
@@ -494,335 +587,358 @@ function AddModal({
       </h2>
 
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-4">
-          {fields.map((field) => (
-            <div
-              key={field.name}
-              className={
-                [
-                  "textarea",
-                  "checkbox",
-                  "colorVariants",
-                ].includes(field.type)
-                  ? "col-span-2"
-                  : ""
-              }
-            >
-              {/* Color Variants */}
-              {field.type === "colorVariants" ? (
-                <div className="col-span-2">
-                  <div className="flex justify-between items-center mb-4">
-                    <label className="text-white font-semibold">
-                      {field.label}
-                    </label>
+        {category === "Addimage" ? (
+          <div>
+            <label className="text-white block mb-2">
+              Upload Latest Image
+            </label>
 
-                    <button
-                      type="button"
-                      onClick={addVariant}
-                      className="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600"
-                    >
-                      + Add More
-                    </button>
-                  </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleLatestImageUpload}
+              disabled={isLatestUploading}
+              className={inputClass}
+            />
 
-                  <div className="space-y-5">
-                    {colorVariants.map((variant, index) => {
-                      const discount = calculateDiscount(
-                        variant.price,
-                        variant.originalPrice
-                      );
+            {isLatestUploading && (
+              <p className="text-pink-400 text-sm mt-2">
+                Uploading image...
+              </p>
+            )}
 
-                      return (
-                        <div
-                          key={index}
-                          className="border border-[#343a46] bg-[#1e222b] rounded-lg p-4"
-                        >
-                          <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-white font-semibold">
-                              Variant {index + 1}
-                            </h3>
+            {latestImage && (
+              <div className="relative mt-4 w-40">
+                <img
+                  src={latestImage}
+                  alt="Latest"
+                  className="w-40 h-40 object-cover rounded-lg border border-gray-600"
+                />
 
-                            {colorVariants.length > 1 && (
-                              <button
-                                type="button"
-                                onClick={() => removeVariant(index)}
-                                className="text-red-400 hover:text-red-300"
-                              >
-                                Remove ✕
-                              </button>
-                            )}
-                          </div>
+                <button
+                  type="button"
+                  onClick={() => setLatestImage("")}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4">
+            {fields.map((field) => (
+              <div
+                key={field.name}
+                className={
+                  [
+                    "textarea",
+                    "checkbox",
+                    "colorVariants",
+                  ].includes(field.type)
+                    ? "col-span-2"
+                    : ""
+                }
+              >
+                {field.type === "colorVariants" ? (
+                  <div className="col-span-2">
+                    <div className="flex justify-between items-center mb-4">
+                      <label className="text-white font-semibold">
+                        {field.label}
+                      </label>
 
+                      <button
+                        type="button"
+                        onClick={addVariant}
+                        className="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600"
+                      >
+                        + Add More
+                      </button>
+                    </div>
 
-                          {/* Name */}
-<label className="text-white block mt-4 mb-2">
-   Product Name
-</label>
+                    <div className="space-y-5">
+                      {colorVariants.map((variant, index) => {
+                        const discount = calculateDiscount(
+                          variant.price,
+                          variant.originalPrice
+                        );
 
-<input
-  type="text"
-  value={variant.name}
-  onChange={(e) =>
-    handleVariantChange(index, "name", e.target.value)
-  }
-  placeholder="Enter variant name"
-  className={inputClass}
-  required
-/>
+                        return (
+                          <div
+                            key={index}
+                            className="border border-[#343a46] bg-[#1e222b] rounded-lg p-4"
+                          >
+                            <div className="flex justify-between items-center mb-4">
+                              <h3 className="text-white font-semibold">
+                                Variant {index + 1}
+                              </h3>
 
-                          {/* Color */}
-                          <label className="text-white block mb-2">
-                            Color
-                          </label>
-
-                          <input
-                            type="text"
-                            value={variant.color}
-                            onChange={(e) =>
-                              handleVariantChange(
-                                index,
-                                "color",
-                                e.target.value
-                              )
-                            }
-                            placeholder="Enter color (Black, Blue...)"
-                            className={inputClass}
-                            required
-                          />
-
-                          {/* Image */}
-                          <label className="text-white block mt-4 mb-2">
-                            Upload Image
-                          </label>
-
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) =>
-                              handleImageUpload(e, index)
-                            }
-                            className={inputClass}
-                            disabled={isUploading}
-                          />
-
-                          {isUploading && uploadingIndex === index && (
-                            <p className="text-pink-400 text-sm mt-2">
-                              Uploading image...
-                            </p>
-                          )}
-
-                          {variant.images && (
-                            <div className="relative mt-3 w-24">
-                              <img
-                                src={variant.images}
-                                alt={variant.color || "Product"}
-                                className="w-24 h-24 object-cover rounded-lg border border-gray-600"
-                              />
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleVariantChange(
-                                    index,
-                                    "images",
-                                    ""
-                                  )
-                                }
-                                className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          )}
-
-                          {/* Price Details */}
-                          <div className="grid grid-cols-2 gap-4 mt-4">
-                            <div>
-                              <label className="text-white block mb-2">
-                                Selling Price (₹)
-                              </label>
-
-                              <input
-                                type="number"
-                                min="0"
-                                value={variant.price}
-                                onChange={(e) =>
-                                  handleVariantChange(
-                                    index,
-                                    "price",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Enter selling price"
-                                className={inputClass}
-                                required
-                              />
+                              {colorVariants.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => removeVariant(index)}
+                                  className="text-red-400 hover:text-red-300"
+                                >
+                                  Remove ✕
+                                </button>
+                              )}
                             </div>
 
-                            <div>
-                              <label className="text-white block mb-2">
-                                Original Price (₹)
-                              </label>
+                            <label className="text-white block mt-4 mb-2">
+                              Product Name
+                            </label>
 
-                              <input
-                                type="number"
-                                min="1"
-                                value={variant.originalPrice}
-                                onChange={(e) =>
-                                  handleVariantChange(
-                                    index,
-                                    "originalPrice",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Enter original price"
-                                className={inputClass}
-                                required
-                              />
-                            </div>
-                          </div>
-
-                          {/* Automatic Discount */}
-                          <div className="mt-3 bg-[#252b36] border border-[#343a46] rounded-lg p-3">
-                            <p className="text-gray-300 text-sm">
-                              Automatic Discount
-                            </p>
-
-                            <p className="text-pink-400 font-bold text-lg">
-                              {discount}% OFF
-                            </p>
-                          </div>
-
-                          {/* Sizes */}
-                          <label className="text-white block mt-4 mb-2">
-                            Sizes
-                          </label>
-
-                          <div className="flex gap-2">
                             <input
                               type="text"
-                              value={sizeInputs[index] || ""}
+                              value={variant.name}
                               onChange={(e) =>
-                                setSizeInputs((prev) => ({
-                                  ...prev,
-                                  [index]: e.target.value,
-                                }))
+                                handleVariantChange(index, "name", e.target.value)
                               }
-                              placeholder="Enter size (S, M, L, XL)"
+                              placeholder="Enter variant name"
                               className={inputClass}
+                              required
                             />
 
-                            <button
-                              type="button"
-                              onClick={() => addSize(index)}
-                              disabled={!(sizeInputs[index] || "").trim()}
-                              className="bg-pink-500 text-white px-4 rounded-lg whitespace-nowrap disabled:opacity-50"
-                            >
-                              + Add Size
-                            </button>
-                          </div>
+                            <label className="text-white block mt-4 mb-2">
+                              Color
+                            </label>
 
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            {variant.sizes.map((size) => (
-                              <span
-                                key={size}
-                                className="bg-[#343a46] text-white px-3 py-2 rounded-lg"
-                              >
-                                {size}
+                            <input
+                              type="text"
+                              value={variant.color}
+                              onChange={(e) =>
+                                handleVariantChange(index, "color", e.target.value)
+                              }
+                              placeholder="Enter color (Black, Blue...)"
+                              className={inputClass}
+                              required
+                            />
+
+                            <label className="text-white block mt-4 mb-2">
+                              Upload Image
+                            </label>
+
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) =>
+                                handleImageUpload(e, index)
+                              }
+                              className={inputClass}
+                              disabled={isUploading}
+                            />
+
+                            {isUploading && uploadingIndex === index && (
+                              <p className="text-pink-400 text-sm mt-2">
+                                Uploading image...
+                              </p>
+                            )}
+
+                            {variant.images && (
+                              <div className="relative mt-3 w-24">
+                                <img
+                                  src={variant.images}
+                                  alt={variant.color || "Product"}
+                                  className="w-24 h-24 object-cover rounded-lg border border-gray-600"
+                                />
 
                                 <button
                                   type="button"
                                   onClick={() =>
-                                    removeSize(index, size)
+                                    handleVariantChange(index, "images", "")
                                   }
-                                  className="ml-3 text-red-400"
+                                  className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full"
                                 >
                                   ✕
                                 </button>
-                              </span>
-                            ))}
+                              </div>
+                            )}
+
+                            <div className="grid grid-cols-2 gap-4 mt-4">
+                              <div>
+                                <label className="text-white block mb-2">
+                                  Selling Price (₹)
+                                </label>
+
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={variant.price}
+                                  onChange={(e) =>
+                                    handleVariantChange(index, "price", e.target.value)
+                                  }
+                                  placeholder="Enter selling price"
+                                  className={inputClass}
+                                  required
+                                />
+                              </div>
+
+                              <div>
+                                <label className="text-white block mb-2">
+                                  Original Price (₹)
+                                </label>
+
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={variant.originalPrice}
+                                  onChange={(e) =>
+                                    handleVariantChange(index, "originalPrice", e.target.value)
+                                  }
+                                  placeholder="Enter original price"
+                                  className={inputClass}
+                                  required
+                                />
+                              </div>
+                            </div>
+
+                            <div className="mt-3 bg-[#252b36] border border-[#343a46] rounded-lg p-3">
+                              <p className="text-gray-300 text-sm">
+                                Automatic Discount
+                              </p>
+
+                              <p className="text-pink-400 font-bold text-lg">
+                                {discount}% OFF
+                              </p>
+                            </div>
+
+                            <label className="text-white block mt-4 mb-2">
+                              Sizes
+                            </label>
+
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={sizeInputs[index] || ""}
+                                onChange={(e) =>
+                                  setSizeInputs((prev) => ({
+                                    ...prev,
+                                    [index]: e.target.value,
+                                  }))
+                                }
+                                placeholder="Enter size (S, M, L, XL)"
+                                className={inputClass}
+                              />
+
+                              <button
+                                type="button"
+                                onClick={() => addSize(index)}
+                                disabled={!(sizeInputs[index] || "").trim()}
+                                className="bg-pink-500 text-white px-4 rounded-lg whitespace-nowrap disabled:opacity-50"
+                              >
+                                + Add Size
+                              </button>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2 mt-3">
+                              {variant.sizes.map((size) => (
+                                <span
+                                  key={size}
+                                  className="bg-[#343a46] text-white px-3 py-2 rounded-lg"
+                                >
+                                  {size}
+
+                                  <button
+                                    type="button"
+                                    onClick={() => removeSize(index, size)}
+                                    className="ml-3 text-red-400"
+                                  >
+                                    ✕
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ) : field.type === "select" ? (
-                <>
-                  <label className="text-white block mb-2">
+                ) : field.type === "select" ? (
+                  <>
+                    <label className="text-white block mb-2">
+                      {field.label}
+                    </label>
+
+                    <select
+                      name={field.name}
+                      value={formData[field.name] ?? ""}
+                      onChange={handleChange}
+                      className={inputClass}
+                    >
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                ) : field.type === "textarea" ? (
+                  <>
+                    <label className="text-white block mb-2">
+                      {field.label}
+                    </label>
+
+                    <textarea
+                      name={field.name}
+                      placeholder={field.label}
+                      value={formData[field.name] ?? ""}
+                      onChange={handleChange}
+                      className={inputClass}
+                      required={field.required}
+                    />
+                  </>
+                ) : field.type === "checkbox" ? (
+                  <label className="flex items-center gap-3 text-white">
+                    <input
+                      type="checkbox"
+                      name={field.name}
+                      checked={Boolean(formData[field.name])}
+                      onChange={handleChange}
+                    />
                     {field.label}
                   </label>
+                ) : (
+                  <>
+                    <label className="text-white block mb-2">
+                      {field.label}
+                    </label>
 
-                  <select
-                    name={field.name}
-                    value={formData[field.name] ?? ""}
-                    onChange={handleChange}
-                    className={inputClass}
-                  >
-                    {field.options.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </>
-              ) : field.type === "textarea" ? (
-                <>
-                  <label className="text-white block mb-2">
-                    {field.label}
-                  </label>
-
-                  <textarea
-                    name={field.name}
-                    placeholder={field.label}
-                    value={formData[field.name] ?? ""}
-                    onChange={handleChange}
-                    className={inputClass}
-                    required={field.required}
-                  />
-                </>
-              ) : field.type === "checkbox" ? (
-                <label className="flex items-center gap-3 text-white">
-                  <input
-                    type="checkbox"
-                    name={field.name}
-                    checked={Boolean(formData[field.name])}
-                    onChange={handleChange}
-                  />
-                  {field.label}
-                </label>
-              ) : (
-                <>
-                  <label className="text-white block mb-2">
-                    {field.label}
-                  </label>
-
-                  <input
-                    type={field.type}
-                    name={field.name}
-                    placeholder={field.label}
-                    value={formData[field.name] ?? ""}
-                    onChange={handleChange}
-                    required={field.required}
-                    className={inputClass}
-                  />
-                </>
-              )}
-            </div>
-          ))}
-        </div>
+                    <input
+                      type={field.type}
+                      name={field.name}
+                      placeholder={field.label}
+                      value={formData[field.name] ?? ""}
+                      onChange={handleChange}
+                      required={field.required}
+                      className={inputClass}
+                    />
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         <button
           type="submit"
-          disabled={isAdding || isUpdating || isUploading}
+          disabled={
+            isAdding ||
+            isUpdating ||
+            isUploading ||
+            isLatestUploading
+          }
           className="w-full mt-5 bg-pink-500 text-white p-3 rounded-lg font-semibold disabled:opacity-50"
         >
-          {isUploading
+          {isUploading || isLatestUploading
             ? "Uploading Image..."
             : isAdding || isUpdating
             ? "Please wait..."
             : mode === "edit"
-            ? "Update Product"
+            ? category === "Addimage"
+              ? "Update Latest Image"
+              : "Update Product"
+            : category === "Addimage"
+            ? "Add Latest Image"
             : "Add Product"}
         </button>
       </form>

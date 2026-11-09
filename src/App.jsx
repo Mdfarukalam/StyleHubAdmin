@@ -19,6 +19,7 @@ import ProtectedRoute from "./component/ProtectedRoute";
 import GlobalLoader from "./component/GlobalLoader";
 import Orders from "./Page/Order";
 import ContactUsUser from "./Page/ContactUsUser";
+import Topimage from "./Page/Topimage";
 
 function App() {
   return (
@@ -44,7 +45,8 @@ function App() {
          <Route path="Orders" element={<Orders />} />
                   <Route path="ContactUsUser" element={<ContactUsUser />} />
              
- 
+                   <Route path="Topimage" element={<Topimage />} />
+
           </Route>
         </Route>
 

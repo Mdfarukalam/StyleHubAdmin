@@ -48,6 +48,14 @@ export const API = {
   Orderall_products:"/api/admin/Orderall_products",
   updateOrderStatuss:"/api/admin/updateOrderStatuss",
   ContactUsUsers:"/api/admin/ContactUsUsers",
+
+  Addimage: {
+    AddLatestImage:"/api/admin/AddLatestImage",
+      GetLatestImage:"/api/admin/GetLatestImage",
+        EditeLatestImage:"/api/admin/EditeLatestImage",
+          DeletedLatestImage:"/api/admin/DeletedLatestImage",
+  }
+
 };
 
 export default API;
